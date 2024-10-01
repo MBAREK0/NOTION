@@ -1,5 +1,14 @@
 package com.MBAREK0.web.repository;
 
-public interface UserRepository {
+import com.MBAREK0.web.entity.User;
 
-}
+import java.util.List;
+import java.util.Optional;
+
+public interface UserRepository {
+     User createUser(User user);
+     Optional<User> getUserById(Long id);
+     List<User> getAllUsers();
+     User updateUser(User user);
+     User deleteUser(Long id);
+    }
