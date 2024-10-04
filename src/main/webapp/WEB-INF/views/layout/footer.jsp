@@ -1,4 +1,4 @@
-<%-- footer.jsp --%>
-<footer>
-    <p>&copy; 2024 My Application. All rights reserved.</p>
-</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+</html>

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,14 +42,12 @@ public class UserController extends HttpServlet {
     private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<User> users = userService.getAllUsers();
         request.setAttribute("users", users);
-        request.setAttribute("contentPage", "/WEB-INF/views/userListContent.jsp");
-        request.getRequestDispatcher("/WEB-INF/views/userList.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/users/userList.jsp").forward(request, response);
     }
 
     private void showCreateForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        request.setAttribute("contentPage", "/WEB-INF/views/userFormContent.jsp");
-        request.getRequestDispatcher("/WEB-INF/views/userForm.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/users/createForm.jsp").forward(request, response);
     }
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -60,7 +59,7 @@ public class UserController extends HttpServlet {
         }
         User user = user_optional.get();
         request.setAttribute("user", user);
-        request.getRequestDispatcher("/WEB-INF/views/userForm.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/users/updateForm.jsp").forward(request, response);
     }
 
     private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -100,9 +99,10 @@ public class UserController extends HttpServlet {
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String email = request.getParameter("email");
+        String role = request.getParameter("role");
         // Update role as needed
 
-        User updatedUser = new User(username, password, firstName, lastName, email, UserOrManager.user);
+        User updatedUser = new User(username, password, firstName, lastName, email, UserOrManager.valueOf(role));
         updatedUser.setId(userId);
         userService.updateUser(updatedUser);
         response.sendRedirect(request.getContextPath() + "/users?action=list");

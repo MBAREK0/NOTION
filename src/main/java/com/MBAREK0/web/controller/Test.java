@@ -17,7 +17,7 @@ public class Test extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserService userService = new UserService();
-        long id = 1;
+
         List<User> users = userService.getAllUsers();
 
 
