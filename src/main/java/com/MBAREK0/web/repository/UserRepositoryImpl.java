@@ -47,10 +47,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> getUserByEmail(String email){
-        User user = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+        List<User> user = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
                 .setParameter("email", email)
-                .getSingleResult();
-        return Optional.ofNullable(user);
+                .getResultList();
+        if(user.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(user.get(0));
     }
 
 

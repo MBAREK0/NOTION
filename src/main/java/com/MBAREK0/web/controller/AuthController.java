@@ -40,7 +40,7 @@ public class AuthController extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        User user = userService.getUserByEmail(email).get();
+        User user = userService.getUserByEmail(email).orElse(null);
 
         if(user != null && PasswordUtil.checkPassword(password, user.getPassword())){
 

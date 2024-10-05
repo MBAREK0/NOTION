@@ -2,6 +2,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
+
+    <!-- Servlets   -->
     <servlet>
         <servlet-name>UserController</servlet-name>
         <servlet-class>com.MBAREK0.web.controller.UserController</servlet-class>
@@ -26,4 +28,16 @@
         <servlet-name>Auth</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+    <!-- filters   -->
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>com.MBAREK0.web.filter.AuthenticationFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
 </web-app>
