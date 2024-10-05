@@ -47,7 +47,6 @@ public class UserController extends HttpServlet {
     }
 
     private void showCreateForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         request.getRequestDispatcher("/WEB-INF/views/users/createForm.jsp").forward(request, response);
     }
 
@@ -89,7 +88,10 @@ public class UserController extends HttpServlet {
         String role = request.getParameter("role");
 
         User newUser = new User(username, password, firstName, lastName, email, UserOrManager.valueOf(role));
-        userService.createUser(newUser);
+        if (userService.createUser(newUser) == null) {
+            String message = "User with email " + email + " already exists.";
+            request.getSession().setAttribute("errorMessage", message);
+        }
         response.sendRedirect(request.getContextPath() + "/users?action=list");
     }
 

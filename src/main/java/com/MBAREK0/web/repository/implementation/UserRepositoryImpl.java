@@ -1,8 +1,9 @@
-package com.MBAREK0.web.repository;
+package com.MBAREK0.web.repository.implementation;
 
 
 
 import com.MBAREK0.web.entity.User;
+import com.MBAREK0.web.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -27,10 +28,9 @@ public class UserRepositoryImpl implements UserRepository {
         query.setParameter("email", user.getEmail());
 
         if (!query.getResultList().isEmpty()) {
-            throw new IllegalArgumentException("User with email " + user.getEmail() + " already exists.");
+            return null;
         }
 
-        // If no user exists, proceed to insert the new user
         entityManager.getTransaction().begin();
         entityManager.merge(user);
         entityManager.getTransaction().commit();

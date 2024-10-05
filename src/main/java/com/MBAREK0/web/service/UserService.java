@@ -2,7 +2,7 @@ package com.MBAREK0.web.service;
 
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.repository.UserRepository;
-import com.MBAREK0.web.repository.UserRepositoryImpl;
+import com.MBAREK0.web.repository.implementation.UserRepositoryImpl;
 import com.MBAREK0.web.util.PasswordUtil;
 
 import java.util.List;

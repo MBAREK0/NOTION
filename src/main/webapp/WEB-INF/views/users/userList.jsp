@@ -23,10 +23,20 @@
         <div class=" mb-4">
             <%--content--%>
 
+
                 <div class="w-full flex justify-end">
                     <a href="<%= request.getContextPath() %>/users?action=create" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create New User</a>
                 </div>
 
+                <div class="width-full flex justify-center ">
+                    <c:if test="${not empty sessionScope.errorMessage}">
+
+                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                                ${sessionScope.errorMessage}
+                        </div>
+                        <c:remove var="errorMessage" scope="session" />
+                    </c:if>
+                </div>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg pb-10 py-5">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <caption class="px-5 pb-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">

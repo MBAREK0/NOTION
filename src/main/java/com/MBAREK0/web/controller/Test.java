@@ -1,8 +1,10 @@
 package com.MBAREK0.web.controller;
 
 
+import com.MBAREK0.web.entity.Tag;
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserOrManager;
+import com.MBAREK0.web.service.TagService;
 import com.MBAREK0.web.util.PasswordUtil;
 import com.MBAREK0.web.service.UserService;
 import jakarta.servlet.ServletException;
@@ -16,27 +18,17 @@ import java.io.PrintWriter;
 public class Test extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UserService userService = new UserService();
+        TagService tagService = new TagService();
+        Tag tag = tagService.getTagById(1).get();
 
-        User user = new User();
-        user.setUsername("m");
-        user.setEmail("m@m.com");
-        user.setPassword("mmmm");
-        user.setFirstName("M");
-        user.setLastName("M");
-        user.setRole(UserOrManager.manager);
-        user.setCreatedAt(java.time.LocalDateTime.now());
-        user.setUpdatedAt(java.time.LocalDateTime.now());
-
-
-
-        userService.createUser(user);
-        if (user.getId() != null) {
+        tag.setName("Test1");
+        Tag tag1 = tagService.deleteTag(tag);
+        if (tag1 != null) {
             PrintWriter out = response.getWriter();
-            out.println("User created successfully");
+            out.println("tag1 updateTag successfully");
         } else {
             PrintWriter out = response.getWriter();
-            out.println("User creation failed");
+            out.println("tag1 updateTag failed");
         }
 
     }
