@@ -31,10 +31,11 @@ public class AuthenticationFilter implements Filter {
             return;
         }
 
-        // Proceed with the next filter or servlet
+        // Proceed with the next filter or servlet in the chain
         chain.doFilter(request, response);
     }
 
+    // is called by the web container to indicate to a filter that it is being taken out of service.
     @Override
     public void destroy() {
     }
