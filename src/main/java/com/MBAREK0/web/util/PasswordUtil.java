@@ -1,4 +1,4 @@
-package com.MBAREK0.web.myUtil;
+package com.MBAREK0.web.util;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,15 +95,19 @@ public class UserController extends HttpServlet {
 
     private void updateUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long userId = Long.parseLong(request.getParameter("id"));
+        User user = userService.getUserById(userId).get();
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String email = request.getParameter("email");
         String role = request.getParameter("role");
+
         // Update role as needed
 
-        User updatedUser = new User(username, password, firstName, lastName, email, UserOrManager.valueOf(role));
+        User updatedUser = new User(username, password, firstName, lastName, email, UserOrManager.valueOf(role),user.getCreatedAt(),user.getUpdatedAt());
+        updatedUser.setUpdatedAt(LocalDateTime.now());
+
         updatedUser.setId(userId);
         userService.updateUser(updatedUser);
         response.sendRedirect(request.getContextPath() + "/users?action=list");

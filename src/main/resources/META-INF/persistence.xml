@@ -5,6 +5,12 @@
              version="3.0">
     <persistence-unit name="default">
         <class>com.MBAREK0.web.entity.User</class>
+        <class>com.MBAREK0.web.entity.TaskTags</class>
+        <class>com.MBAREK0.web.entity.Token</class>
+        <class>com.MBAREK0.web.entity.Tag</class>
+        <class>com.MBAREK0.web.entity.Task</class>
+        <class>com.MBAREK0.web.entity.TaskHistory</class>
+        <class>com.MBAREK0.web.entity.ManagerBox</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
                 <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/dev_sync"/>

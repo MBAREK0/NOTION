@@ -1,21 +1,33 @@
 package com.MBAREK0.web.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
 
- *     id SERIAL PRIMARY KEY,
- *     username VARCHAR(50) NOT NULL UNIQUE,
- *     password VARCHAR(255) NOT NULL,
- *     first_name VARCHAR(50) NOT NULL,
- *     last_name VARCHAR(50) NOT NULL,
- *     email VARCHAR(100) NOT NULL UNIQUE,
- *     role VARCHAR(20) NOT NULL CHECK (role IN ('manager', 'user'))
-
+ CREATE TABLE users (
+ id SERIAL PRIMARY KEY,
+ username VARCHAR(50) NOT NULL UNIQUE,
+ password VARCHAR(255) NOT NULL,
+ first_name VARCHAR(100) NOT NULL,
+ last_name VARCHAR(100) NOT NULL,
+ email VARCHAR(100) NOT NULL UNIQUE,
+ role VARCHAR(50) NOT NULL CHECK (role IN ('user', 'manager')),  -- Check applied to 'role'
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+ );
  */
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +51,18 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserOrManager role;
 
-    public User() {
-    }
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user")
+    private List<Task> tasks;
+
+    @OneToMany(mappedBy = "manager")
+    private List<Task> managedTasks;
+
 
     public User(String username, String password, String firstName, String lastName, String email, UserOrManager role) {
         this.username = username;
@@ -49,63 +71,21 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.role = role;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
+    public User(String username, String password, String firstName, String lastName, String email, UserOrManager role, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
         this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
-    }
-
-    public UserOrManager getRole() {
-        return role;
-    }
-
-    public void setRole(UserOrManager role) {
         this.role = role;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
+
 
     @Override
     public String toString() {

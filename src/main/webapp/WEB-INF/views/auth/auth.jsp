@@ -16,7 +16,7 @@
     <img src="https://imgs.search.brave.com/tcfDyp2j2sapuF-3VIXlgvywrihUODFU0soI_OHZjmo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9sb2dv/d2lrLmNvbS9jb250/ZW50L3VwbG9hZHMv/aW1hZ2VzL2dvb2ds/ZS10YXNrczcwNTIu/bG9nb3dpay5jb20u/d2VicA"
          alt="Logo"
          class="w-12 h-12 object-contain">
-    <p class="text-xl font-semibold">Notion</p>
+    <p class="text-xl font-semibold">Task Manager</p>
 </div>
 
 <div class=" mb-4" style="margin-top: 100px;">
