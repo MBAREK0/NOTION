@@ -6,6 +6,8 @@ import com.MBAREK0.web.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,17 +23,36 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User createUser(User user) {
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
+        query.setParameter("email", user.getEmail());
+
+        if (!query.getResultList().isEmpty()) {
+            throw new IllegalArgumentException("User with email " + user.getEmail() + " already exists.");
+        }
+
+        // If no user exists, proceed to insert the new user
         entityManager.getTransaction().begin();
-        User user1 = entityManager.merge(user);
+        entityManager.merge(user);
         entityManager.getTransaction().commit();
-        return user1;
+
+        return user;
     }
+
 
     @Override
     public Optional<User> getUserById(Long id) {
         User user = entityManager.find(User.class, id);
         return Optional.ofNullable(user);
     }
+
+    @Override
+    public Optional<User> getUserByEmail(String email){
+        User user = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+                .setParameter("email", email)
+                .getSingleResult();
+        return Optional.ofNullable(user);
+    }
+
 
     @Override
     public List<User> getAllUsers() {

@@ -10,12 +10,20 @@
         <servlet-name>Test</servlet-name>
         <servlet-class>com.MBAREK0.web.controller.Test</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Auth</servlet-name>
+        <servlet-class>com.MBAREK0.web.controller.AuthController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Test</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/test</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UserController</servlet-name>
         <url-pattern>/users</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Auth</servlet-name>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
 </web-app>

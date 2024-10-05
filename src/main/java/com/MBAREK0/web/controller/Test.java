@@ -2,6 +2,7 @@ package com.MBAREK0.web.controller;
 
 
 import com.MBAREK0.web.entity.User;
+import com.MBAREK0.web.myUtil.PasswordUtil;
 import com.MBAREK0.web.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,16 +19,19 @@ public class Test extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserService userService = new UserService();
 
-        List<User> users = userService.getAllUsers();
+        long id = Long.parseLong("4");
+        User user = userService.getUserById(id).get();
 
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        users.forEach(user -> {
-            out.println("<h1>");
-            out.println("User ID: " + user.getId() + "<br>");
-            out.println("User Email: " + user.getEmail() + "<br>");
-        });
+        out.println("<h1>");
+        if(PasswordUtil.checkPassword("mbarek", user.getPassword())){
+            out.println("Password is correct");
+        }else {
+            out.println("Password is incorrect");
+        }
+        out.println("</h1>");
 
 
     }
