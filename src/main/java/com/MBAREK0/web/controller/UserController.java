@@ -3,6 +3,9 @@ package com.MBAREK0.web.controller;
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserOrManager;
 import com.MBAREK0.web.service.UserService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,11 +19,19 @@ import java.util.Optional;
 
 public class UserController extends HttpServlet {
 
+    private EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
     private UserService userService;
+
+    public UserController() {
+        entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        entityManager = entityManagerFactory.createEntityManager();
+        userService = new UserService(entityManager);
+    }
 
     @Override
     public void init() throws ServletException {
-        userService = new UserService();
+
     }
 
     @Override
@@ -65,6 +76,8 @@ public class UserController extends HttpServlet {
     private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long userId = Long.parseLong(request.getParameter("id"));
         userService.deleteUser(userId);
+        String message = "User deleted successfully.";
+        request.getSession().setAttribute("message", message);
         response.sendRedirect(request.getContextPath() + "/users?action=list");
     }
 
@@ -92,6 +105,8 @@ public class UserController extends HttpServlet {
             String message = "User with email " + email + " already exists.";
             request.getSession().setAttribute("errorMessage", message);
         }
+        String message = "User created successfully.";
+        request.getSession().setAttribute("message", message);
         response.sendRedirect(request.getContextPath() + "/users?action=list");
     }
 
@@ -112,6 +127,8 @@ public class UserController extends HttpServlet {
 
         updatedUser.setId(userId);
         userService.updateUser(updatedUser);
+        String message = "User updated successfully.";
+        request.getSession().setAttribute("message", message);
         response.sendRedirect(request.getContextPath() + "/users?action=list");
     }
 }

@@ -5,7 +5,6 @@
              version="3.0">
     <persistence-unit name="default">
         <class>com.MBAREK0.web.entity.User</class>
-        <class>com.MBAREK0.web.entity.TaskTags</class>
         <class>com.MBAREK0.web.entity.Token</class>
         <class>com.MBAREK0.web.entity.Tag</class>
         <class>com.MBAREK0.web.entity.Task</class>

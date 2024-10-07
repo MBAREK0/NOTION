@@ -3,27 +3,40 @@ package com.MBAREK0.web.controller;
 import com.MBAREK0.web.entity.Tag;
 import com.MBAREK0.web.service.TagService;
 import com.MBAREK0.web.service.UserService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
 
 public class TagController extends HttpServlet {
 
+    private EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
     private TagService tagService;
+    private UserService userService;
+
+    public TagController() {
+        entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        entityManager = entityManagerFactory.createEntityManager();
+        tagService = new TagService(entityManager);
+        userService = new UserService(entityManager);
+    }
 
     @Override
     public void init() throws ServletException {
-        tagService = new TagService();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
 
-        if ("list".equals(action)) {
+      if ("list".equals(action)) {
             listTags(req, resp);
         } else if ("create".equals(action)) {
             showCreateForm(req, resp);
@@ -38,6 +51,10 @@ public class TagController extends HttpServlet {
     }
 
     private void listTags(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        List<Tag> tags = tagService.gatAllTags();
+        req.setAttribute("tags", tags);
+
         req.getRequestDispatcher("/WEB-INF/views/tags/tagList.jsp").forward(req, resp);
     }
 
@@ -46,13 +63,21 @@ public class TagController extends HttpServlet {
     }
 
     private void showEditForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        long id = Long.parseLong(req.getParameter("id"));
+        if (tagService.getTagById(id).isEmpty()){
+            String message = "Tag not found";
+            req.getSession().setAttribute("errorMessage", message);
+            resp.sendRedirect(req.getContextPath() + "/tags?action=list");
+            return;
+        }
+        Tag tag = tagService.getTagById(id).get();
+        req.setAttribute("tag", tag);
         req.getRequestDispatcher("/WEB-INF/views/tags/editForm.jsp").forward(req, resp);
     }
 
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        UserService userService = new UserService();
         String action = req.getParameter("action");
         if ("create".equals(action)) {
             createTag(req, resp);

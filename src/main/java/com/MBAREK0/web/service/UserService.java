@@ -4,6 +4,7 @@ import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.repository.UserRepository;
 import com.MBAREK0.web.repository.implementation.UserRepositoryImpl;
 import com.MBAREK0.web.util.PasswordUtil;
+import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,8 +13,8 @@ public class UserService {
 
     private UserRepository userRepository;
 
-    public UserService() {
-        this.userRepository = new UserRepositoryImpl();
+    public UserService(EntityManager entityManager) {
+        this.userRepository = new UserRepositoryImpl(entityManager);
     }
 
     public User createUser(User user) {

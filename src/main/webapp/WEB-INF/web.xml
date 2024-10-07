@@ -16,6 +16,19 @@
         <servlet-name>Auth</servlet-name>
         <servlet-class>com.MBAREK0.web.controller.AuthController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Tag</servlet-name>
+        <servlet-class>com.MBAREK0.web.controller.TagController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Task</servlet-name>
+        <servlet-class>com.MBAREK0.web.controller.TaskController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DateController</servlet-name>
+        <servlet-class>com.MBAREK0.web.controller.DateController</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>Test</servlet-name>
         <url-pattern>/test</url-pattern>
@@ -28,6 +41,19 @@
         <servlet-name>Auth</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Tag</servlet-name>
+        <url-pattern>/tags</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Task</servlet-name>
+        <url-pattern>/tasks</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DateController</servlet-name>
+        <url-pattern>/date</url-pattern>
+    </servlet-mapping>
+
 
     <!-- filters   -->
 <!--    <filter>-->

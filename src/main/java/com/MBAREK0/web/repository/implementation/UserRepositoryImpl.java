@@ -14,12 +14,10 @@ import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository {
 
-    private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
 
-    public UserRepositoryImpl() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        entityManager = entityManagerFactory.createEntityManager();
+    public UserRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override

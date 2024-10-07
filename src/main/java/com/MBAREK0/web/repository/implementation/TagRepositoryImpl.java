@@ -13,12 +13,10 @@ import java.util.Optional;
 
 public class TagRepositoryImpl implements TagRepository {
 
-    private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
 
-    public TagRepositoryImpl() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        entityManager = entityManagerFactory.createEntityManager();
+    public TagRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override

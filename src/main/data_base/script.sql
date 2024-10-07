@@ -14,18 +14,19 @@ CREATE TABLE users (
 
 -- Tasks table to store task details
 CREATE TABLE tasks (
-   id SERIAL PRIMARY KEY,
-   title VARCHAR(255) NOT NULL,
-   description TEXT,
-   status VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'in_progress', 'completed', 'overdue')),  -- Added 'overdue' status
-   deadline TIMESTAMP NOT NULL,
-   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   user_id INT NOT NULL,  -- Foreign key to reference the user responsible for the task
-   manager_id INT,  -- Foreign key to reference the manager assigning the task
-   ischanged BOOLEAN DEFAULT FALSE,  -- Added column to track task modification
-   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-   FOREIGN KEY (manager_id) REFERENCES users(id) ON DELETE SET NULL
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    status VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'in_progress', 'completed', 'overdue')),  -- Added 'overdue' status
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL,  -- Foreign key to reference the user responsible for the task
+    manager_id INT,  -- Foreign key to reference the manager assigning the task
+    ischanged BOOLEAN DEFAULT FALSE,  -- Added column to track task modification
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (manager_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Tags table for managing task tags (many-to-many relationship)
@@ -48,7 +49,7 @@ CREATE TABLE task_tags (
 CREATE TABLE tokens (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    task_id INT NOT NULL,
+    task_id INT NOT NULL, -- this should be removed because it is not needed
     modify_token_count INT DEFAULT 2,  -- 2 tokens per day for task modification
     delete_token_count INT DEFAULT 1,  -- 1 delete token per month
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
