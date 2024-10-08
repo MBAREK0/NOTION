@@ -47,17 +47,17 @@
 
                 <div class="grid md:grid-cols-2 md:gap-6">
                     <div class="relative z-0 w-full mb-5 group">
-                        <label for="states-multiple" class="block mb-2 text-sm font-medium text-gray-900">Select the task tags</label>
-                        <select class="selectTow w-full" name="states[]" id="states-multiple" multiple>
+                        <label for="tag-multiple" class="block mb-2 text-sm font-medium text-gray-900">Select the task tags</label>
+                        <select class="selectTow w-full" name="tags" id="tag-multiple" multiple>
                             <c:forEach var="tag" items="${tags}">
-                                 <option value="${tag.id}">${tag.name}</option>
+                                <option value="${tag.id}">${tag.name}</option>
                             </c:forEach>
                         </select>
                     </div>
 
                     <div class="relative z-0 w-full mb-5 group">
-                        <label for="states-multiple" class="block mb-2 text-sm font-medium text-gray-900">Select users to assign the task</label>
-                        <select class=" selectOne w-full" name="state" id="states-single">
+                        <label for="states-single" class="block mb-2 text-sm font-medium text-gray-900">Select users to assign the task</label>
+                        <select class=" selectOne w-full" name="userId" id="states-single">
                             <option value="">Select user</option>
                             <c:forEach var="user" items="${users}">
                                 <option value="${user.id}">${user.username}</option>
@@ -67,18 +67,18 @@
                 </div>
                 <div class="grid md:grid-cols-2 md:gap-6">
                     <div class="relative z-0 w-full mb-5 group">
-                            <label for="states-multiple" class="block mb-2 text-sm font-medium text-gray-900">Select the start date</label>
+                            <label  class="block mb-2 text-sm font-medium text-gray-900">Select the start date</label>
                         <div class="relative max-w-sm">
                             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                                 </svg>
                             </div>
-                            <input datepicker id="start-date" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date">
+                            <input datepicker name="startDate" id="start-date" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date">
                         </div>
                     </div>
                     <div class="relative z-0 w-full mb-5 group">
-                            <label for="states-multiple" class="block mb-2 text-sm font-medium text-gray-900">Select the end date</label>
+                            <label  class="block mb-2 text-sm font-medium text-gray-900">Select the end date</label>
                         <div class="relative max-w-sm">
 
                             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
@@ -86,7 +86,7 @@
                                     <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                                 </svg>
                             </div>
-                            <input datepicker id="end-date" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date">
+                            <input datepicker name="endDate" id="end-date" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date">
                         </div>
                     </div>
 
@@ -113,7 +113,7 @@
             placeholder: "user",
             allowClear: true
         });
-        $('.selectTow').select2({
+        $('#tag-multiple').select2({
             placeholder: "Tags",
             allowClear: true
         });

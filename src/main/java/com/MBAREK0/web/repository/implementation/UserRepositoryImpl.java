@@ -30,7 +30,7 @@ public class UserRepositoryImpl implements UserRepository {
         }
 
         entityManager.getTransaction().begin();
-        entityManager.merge(user);
+        entityManager.persist(user);
         entityManager.getTransaction().commit();
 
         return user;

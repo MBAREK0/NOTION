@@ -1,10 +1,12 @@
 package com.MBAREK0.web.repository.implementation;
 
 import com.MBAREK0.web.entity.Task;
+import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.repository.TaskRepository;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TaskRepositoryImpl implements TaskRepository {
     private EntityManager entityManager;
@@ -16,7 +18,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     @Override
     public Task createTask(Task task) {
         entityManager.getTransaction().begin();
-        entityManager.merge(task);
+        entityManager.persist(task);
         entityManager.getTransaction().commit();
 
         return task;
@@ -24,8 +26,9 @@ public class TaskRepositoryImpl implements TaskRepository {
 
 
     @Override
-    public Task getTaskById(Long id) {
-        return entityManager.find(Task.class, id);
+    public Optional<Task> getTaskById(Long id) {
+        Task user =  entityManager.find(Task.class, id);
+        return Optional.ofNullable(user);
     }
 
     public List<Task> getTasksByUserId(Long userId) {

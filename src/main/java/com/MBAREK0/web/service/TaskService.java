@@ -6,6 +6,7 @@ import com.MBAREK0.web.repository.implementation.TaskRepositoryImpl;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TaskService {
 
@@ -19,7 +20,7 @@ public class TaskService {
         return taskRepository.createTask(task);
     }
 
-    public Task getTaskById(Long id) {
+    public Optional<Task> getTaskById(Long id) {
         return taskRepository.getTaskById(id);
     }
 

@@ -29,7 +29,7 @@ public class TagRepositoryImpl implements TagRepository {
         }
 
         entityManager.getTransaction().begin();
-        entityManager.merge(tag);
+        entityManager.persist(tag);
         entityManager.getTransaction().commit();
 
         return tag;

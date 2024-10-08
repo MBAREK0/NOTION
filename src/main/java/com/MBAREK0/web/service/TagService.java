@@ -5,6 +5,8 @@ import com.MBAREK0.web.repository.TagRepository;
 import com.MBAREK0.web.repository.implementation.TagRepositoryImpl;
 import jakarta.persistence.EntityManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +23,15 @@ public class TagService {
 
     public Optional<Tag> getTagById(long id){
         return tagRepository.getTagById(id);
+    }
+
+    public List<Tag> getTagsByIds(List<String> tagsList) {
+        List<Tag> tags = new ArrayList<>();
+        for (String tagId : tagsList) {
+            Optional<Tag> tag = tagRepository.getTagById(Long.parseLong(tagId));
+            tag.ifPresent(tags::add);
+        }
+        return tags;
     }
 
     public List<Tag> gatAllTags(){
