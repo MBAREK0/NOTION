@@ -114,6 +114,14 @@ public class TaskController extends HttpServlet {
         }
         Task task = opTask.get();
 
+        // get the status of tag for select options
+        ArrayList<String> statusList = new ArrayList<>();
+        statusList.add(TaskStatus.pending.toString());
+        statusList.add(TaskStatus.in_progress.toString());
+        statusList.add(TaskStatus.completed.toString());
+        statusList.add(TaskStatus.overdue.toString());
+        req.setAttribute("statusList", statusList);
+
         List<Tag> tags = tagService.gatAllTags();
         req.setAttribute("tags", tags);
         List<User> users = userService.getAllUsers();
@@ -227,6 +235,7 @@ public class TaskController extends HttpServlet {
     }
 
     private void updateTask(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
     }
 
 }

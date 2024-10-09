@@ -58,10 +58,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag deleteTag(Tag tag){
-        Optional<Tag> tagOptional = getTagById(tag.getId());
-        if(tagOptional.isEmpty()) {
-            return null;
-        }
+
         entityManager.getTransaction().begin();
         entityManager.remove(tag);
         entityManager.getTransaction().commit();

@@ -30,20 +30,33 @@
   <div class="p-4 rounded-lg dark:border-gray-700">
     <div class="mb-4 mt-10">
       <%-- Content --%>
-      <form class="max-w-2xl mx-auto" action="<%= request.getContextPath() %>/tasks?action=create" method="post">
+      <form class="max-w-2xl mx-auto" action="<%= request.getContextPath() %>/tasks?action=edit" method="post">
         <h1 class="text-3xl font-bold text-gray-800 mb-4">
           Create New Task
         </h1>
         <div class="relative z-0 w-full mb-5 group">
           <label for="title" class="block mb-2 text-sm font-medium text-gray-900">Enter the title of the task</label>
-          <input type="text" value="${task.title}" name="title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" " required />
+          <input type="text" value="${task.title}" name="title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" " required />
         </div>
 
         <div class="relative z-0 w-full mb-5 group">
           <label for="description" class="block mb-2 text-sm font-medium text-gray-900">Enter the Description of the task</label>
-          <textarea name="description"  id="description" rows="2" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" " required>
+          <textarea name="description"  id="description" rows="2" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" " required>
             ${task.description}
           </textarea>
+        </div>
+
+        <div class="relative z-0 w-full mb-5 group">
+          <label for="task_status" class="sr-only">TAsk Status </label>
+          <select id="task_status" name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+            <option value="${task.status}">${task.status}</option>
+            <c:forEach var="status" items="${statusList}">
+              <c:if test="${status != task.status}">
+                <option value="${status}">${status}</option>
+              </c:if>
+            </c:forEach>
+          </select>
         </div>
 
         <div class="grid md:grid-cols-2 md:gap-6">

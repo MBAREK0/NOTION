@@ -1,11 +1,8 @@
 package com.MBAREK0.web.controller;
 
 
-import com.MBAREK0.web.entity.Tag;
-import com.MBAREK0.web.entity.Task;
+import com.MBAREK0.web.entity.*;
 
-import com.MBAREK0.web.entity.TaskStatus;
-import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.service.TagService;
 
 import com.MBAREK0.web.service.TaskService;
@@ -38,7 +35,24 @@ public class Test extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        checkTaskCrud(request, response);
+
+        // creat new user
+//        User user = new User();
+//        user.setUsername("mohamed");
+//        user.setPassword("mm");
+//        user.setFirstName("mohamed");
+//        user.setLastName("mohamed");
+//        user.setEmail("l@l.com");
+//        user.setRole(UserOrManager.manager);
+//        user.setCreatedAt(LocalDateTime.now());
+//        user.setUpdatedAt(LocalDateTime.now());
+//
+//        // save
+//       UserService userService = new UserService(entityManager);
+//        userService.createUser(user);
+//
+//        response.getWriter().println("User saved successfully.");
+
 
    }
 

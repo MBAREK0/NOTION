@@ -4,6 +4,7 @@ import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserOrManager;
 import com.MBAREK0.web.util.PasswordUtil;
 import com.MBAREK0.web.service.UserService;
+import com.MBAREK0.web.util.ResponseHandler;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -48,26 +49,28 @@ public class AuthController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
+      try {
+          String email = request.getParameter("email");
+          String password = request.getParameter("password");
 
-        User user = userService.getUserByEmail(email).orElse(null);
+          User user = userService.getUserByEmail(email).orElse(null);
 
-        if(user != null && PasswordUtil.checkPassword(password, user.getPassword())){
+          if(user != null && PasswordUtil.checkPassword(password, user.getPassword())){
 
-            UserOrManager role = user.getRole();
-            request.getSession().setAttribute("user", user);
-            request.getSession().setAttribute("role", role);
+              UserOrManager role = user.getRole();
+              request.getSession().setAttribute("user", user);
+              request.getSession().setAttribute("role", role);
 
+              response.sendRedirect(request.getContextPath() + "/users");
 
-            response.sendRedirect(request.getContextPath() + "/users");
+          }else {
+              ResponseHandler.handleError(request, response,"", "Invalid email or password.");
+          }
 
-        }else {
-            String message = "Email or password is incorrect";
-            request.getSession().setAttribute("errorMessage", message);
-            response.sendRedirect(request.getContextPath() + "/");
-
-        }
+      }catch (Exception e){
+          String message = "An error occurred while processing your request" + e.getMessage();
+          ResponseHandler.handleError(request, response,"", message);
+      }
     }
 
 

@@ -3,6 +3,8 @@ package com.MBAREK0.web.controller;
 import com.MBAREK0.web.entity.Tag;
 import com.MBAREK0.web.service.TagService;
 import com.MBAREK0.web.service.UserService;
+import com.MBAREK0.web.util.ResponseHandler;
+import com.MBAREK0.web.util.validator.Validator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -13,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class TagController extends HttpServlet {
 
@@ -64,14 +67,15 @@ public class TagController extends HttpServlet {
 
     private void showEditForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         long id = Long.parseLong(req.getParameter("id"));
+
         if (tagService.getTagById(id).isEmpty()){
-            String message = "Tag not found";
-            req.getSession().setAttribute("errorMessage", message);
-            resp.sendRedirect(req.getContextPath() + "/tags?action=list");
+            ResponseHandler.handleError(req, resp, "tags", "Tag not found");
             return;
         }
+
         Tag tag = tagService.getTagById(id).get();
         req.setAttribute("tag", tag);
+
         req.getRequestDispatcher("/WEB-INF/views/tags/editForm.jsp").forward(req, resp);
     }
 
@@ -90,62 +94,66 @@ public class TagController extends HttpServlet {
 
     private void createTag(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String name = req.getParameter("name");
+
+        if (!Validator.isValidName(name)){
+            ResponseHandler.handleError(req, resp, "tags", "Invalid name");
+            return;
+        }
+
         Tag tag = new Tag();
         tag.setName(name);
-        if (tagService.createTag(tag) == null){
-            String message = "Tag already exists";
-            req.getSession().setAttribute("errorMessage", message);
-        }else {
-            String message = "tag created successfully";
-            req.getSession().setAttribute("message", message);
-        }
-        resp.sendRedirect(req.getContextPath() + "/tags?action=list");
 
+        if (tagService.createTag(tag).getId() == null)
+            ResponseHandler.handleError(req, resp, "tags", "Failed to create tag");
+        else
+            ResponseHandler.handleSuccess(req, resp, "tags", "Tag created successfully");
     }
 
     private void editTag(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         long id = Long.parseLong(req.getParameter("id"));
         String name = req.getParameter("name");
 
+        if (!Validator.isValidName(name)){
+            ResponseHandler.handleError(req, resp, "tags", "Invalid name");
+            return;
+        }
+
         if (tagService.getTagById(id).isEmpty()){
-            String message = "Tag not found";
-            req.getSession().setAttribute("errorMessage", message);
-            resp.sendRedirect(req.getContextPath() + "/tags?action=list");
+            ResponseHandler.handleError(req, resp, "tags", "Tag not found");
             return;
         }
-        Tag tag = tagService.getTagById(id).get();
+
+        Optional<Tag> opTag = tagService.getTagById(id);
+        if(opTag.isEmpty()){
+            ResponseHandler.handleError(req, resp, "tags", "Tag not found");
+            return;
+        }
+
+        Tag tag = opTag.get();
         tag.setName(name);
-        if (tagService.updateTag(tag) == null){
-            String message = "Tag not found";
-            req.getSession().setAttribute("errorMessage", message);
-            resp.sendRedirect(req.getContextPath() + "/tags?action=list");
-            return;
-        }else {
-            String message = "tag updated successfully";
-            req.getSession().setAttribute("message", message);
-        }
-        resp.sendRedirect(req.getContextPath() + "/tags?action=list");
+
+        tagService.updateTag(tag);
+
+        ResponseHandler.handleSuccess(req, resp, "tags", "Tag updated successfully");
     }
 
     private void deleteTag(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         long id = Long.parseLong(req.getParameter("id"));
         if (tagService.getTagById(id).isEmpty()){
-            String message = "Tag not found";
-            req.getSession().setAttribute("errorMessage", message);
-            resp.sendRedirect(req.getContextPath() + "/tags?action=list");
+            ResponseHandler.handleError(req, resp, "tags", "Tag not found");
             return;
         }
-        Tag tag = tagService.getTagById(id).get();
 
-       if ( tagService.deleteTag(tag) != null){
-           String message = "tag deleted successfully";
-           req.getSession().setAttribute("message", message);
-       }else {
-           String message = "tag not found";
-           req.getSession().setAttribute("errorMessage", message);
-         }
+        Optional<Tag> opTag = tagService.getTagById(id);
+        if(opTag.isEmpty()){
+            ResponseHandler.handleError(req, resp, "tags", "Tag not found");
+            return;
+        }
+        Tag tag = opTag.get();
 
-        resp.sendRedirect(req.getContextPath() + "/tags?action=list");
+        tagService.deleteTag(tag);
+
+        ResponseHandler.handleSuccess(req, resp, "tags", "Tag deleted successfully");
     }
 
 

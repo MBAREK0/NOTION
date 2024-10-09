@@ -36,6 +36,8 @@ public class UserService {
     }
 
     public User updateUser(User user) {
+        String password =  PasswordUtil.hashPassword(user.getPassword());
+        user.setPassword(password);
         return userRepository.updateUser(user);
     }
 

@@ -3,6 +3,10 @@ package com.MBAREK0.web.controller;
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserOrManager;
 import com.MBAREK0.web.service.UserService;
+import com.MBAREK0.web.util.ResponseHandler;
+import com.MBAREK0.web.util.createObj.CreateUserObj;
+import com.MBAREK0.web.util.validator.UserValidator;
+import com.MBAREK0.web.util.validator.Validator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -65,7 +69,7 @@ public class UserController extends HttpServlet {
         Long userId = Long.parseLong(request.getParameter("id"));
         Optional<User> user_optional = userService.getUserById(userId);
         if (!user_optional.isPresent()) {
-            response.sendRedirect(request.getContextPath() + "/users?action=list");
+             ResponseHandler.handleError(request, response,"users", "User not found.");
             return;
         }
         User user = user_optional.get();
@@ -76,9 +80,7 @@ public class UserController extends HttpServlet {
     private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long userId = Long.parseLong(request.getParameter("id"));
         userService.deleteUser(userId);
-        String message = "User deleted successfully.";
-        request.getSession().setAttribute("message", message);
-        response.sendRedirect(request.getContextPath() + "/users?action=list");
+        ResponseHandler.handleSuccess(request, response, "users","User deleted successfully.");
     }
 
     @Override
@@ -93,42 +95,48 @@ public class UserController extends HttpServlet {
     }
 
     private void createUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String email = request.getParameter("email");
-        String role = request.getParameter("role");
+        User newUser = new User();
 
-        User newUser = new User(username, password, firstName, lastName, email, UserOrManager.valueOf(role));
-        if (userService.createUser(newUser) == null) {
-            String message = "User with email " + email + " already exists.";
-            request.getSession().setAttribute("errorMessage", message);
+
+        if (!CreateUserObj.createUserObj(newUser, request, response)) {
+            return;
         }
-        String message = "User created successfully.";
-        request.getSession().setAttribute("message", message);
-        response.sendRedirect(request.getContextPath() + "/users?action=list");
+
+        if (!UserValidator.isValidUser(newUser)) {
+             ResponseHandler.handleError(request, response,"users", "Invalid user data.");
+            return;
+        }
+
+        if (userService.createUser(newUser) == null) {
+             ResponseHandler.handleError(request, response,"users", "User with email " + request.getParameter("email") + " already exists.");
+            return;
+        }
+
+        ResponseHandler.handleSuccess(request, response,"users", "User created successfully.");
     }
 
     private void updateUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long userId = Long.parseLong(request.getParameter("id"));
-        User user = userService.getUserById(userId).get();
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String email = request.getParameter("email");
-        String role = request.getParameter("role");
+        User user = userService.getUserById(userId).orElse(null);
 
-        // Update role as needed
+        if (user == null) {
+             ResponseHandler.handleError(request, response,"users", "User not found.");
+            return;
+        }
 
-        User updatedUser = new User(username, password, firstName, lastName, email, UserOrManager.valueOf(role),user.getCreatedAt(),user.getUpdatedAt());
-        updatedUser.setUpdatedAt(LocalDateTime.now());
+        if (!CreateUserObj.createUserObj(user, request, response)) {
+            return;
+        }
 
-        updatedUser.setId(userId);
-        userService.updateUser(updatedUser);
-        String message = "User updated successfully.";
-        request.getSession().setAttribute("message", message);
-        response.sendRedirect(request.getContextPath() + "/users?action=list");
+        if (!UserValidator.isValidUser(user)) {
+             ResponseHandler.handleError(request, response,"users", "Invalid user data.");
+            return;
+        }
+
+        user.setUpdatedAt(LocalDateTime.now());
+        userService.updateUser(user);
+        ResponseHandler.handleSuccess(request, response, "users","User updated successfully.");
     }
+
+
 }
