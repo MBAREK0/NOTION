@@ -36,25 +36,20 @@ public class Test extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        // creat new user
-//        User user = new User();
-//        user.setUsername("mohamed");
-//        user.setPassword("mm");
-//        user.setFirstName("mohamed");
-//        user.setLastName("mohamed");
-//        user.setEmail("l@l.com");
-//        user.setRole(UserOrManager.manager);
-//        user.setCreatedAt(LocalDateTime.now());
-//        user.setUpdatedAt(LocalDateTime.now());
-//
-//        // save
-//       UserService userService = new UserService(entityManager);
-//        userService.createUser(user);
-//
-//        response.getWriter().println("User saved successfully.");
+        User user =  (User) request.getSession().getAttribute("user");
+        TaskService taskService = new TaskService(entityManager);
 
 
-   }
+        List<Task> tasks;
+        if (user.getRole().equals(UserOrManager.manager.toString())) {
+            tasks = taskService.getAllTasksByManagerId(user.getId());
+        } else {
+            tasks = taskService.getAllTasksByUserId(user.getId());
+        }
+        for (Task u : tasks) {
+            response.getWriter().println(u.getTitle());
+        }
+    }
 
    public void checkTaskCrud(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException{
        try {
@@ -106,4 +101,22 @@ public class Test extends HttpServlet {
 
    }
 
+   public void createManager(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        User user = new User();
+        user.setUsername("mohamed");
+        user.setPassword("mm");
+        user.setFirstName("mohamed");
+        user.setLastName("mohamed");
+        user.setEmail("l@l.com");
+        user.setRole(UserOrManager.manager);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        // save
+       UserService userService = new UserService(entityManager);
+        userService.createUser(user);
+
+        response.getWriter().println("User saved successfully.");
+   }
 }

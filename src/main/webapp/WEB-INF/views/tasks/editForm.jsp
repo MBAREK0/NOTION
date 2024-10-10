@@ -75,17 +75,20 @@
             </select>
           </div>
 
-          <div class="relative z-0 w-full mb-5 group">
-            <label for="states-single" class="block mb-2 text-sm font-medium text-gray-900">Select users to assign the task</label>
-            <select class=" selectOne w-full" name="userId" id="states-single">
-              <option value="${task.user.id}">${task.user.username}</option>
-              <c:forEach var="user" items="${users}">
-                <c:if test="${user.id != task.user.id}">
-                  <option value="${user.id}">${user.username}</option>
-                </c:if>
-              </c:forEach>
-            </select>
-          </div>
+          <c:if test="${role == 'manager'}">
+            <div class="relative z-0 w-full mb-5 group">
+              <label for="states-single" class="block mb-2 text-sm font-medium text-gray-900">Select users to assign the task</label>
+              <select class=" selectOne w-full" name="userId" id="states-single">
+                <option value="${task.user.id}">${task.user.username}</option>
+                <c:forEach var="user" items="${users}">
+                  <c:if test="${user.id != task.user.id}">
+                    <option value="${user.id}">${user.username}</option>
+                  </c:if>
+                </c:forEach>
+              </select>
+            </div>
+          </c:if>
+
         </div>
         <div class="grid md:grid-cols-2 md:gap-6">
           <div class="relative z-0 w-full mb-5 group">

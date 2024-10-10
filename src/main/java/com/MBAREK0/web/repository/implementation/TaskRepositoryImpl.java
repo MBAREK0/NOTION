@@ -1,9 +1,9 @@
 package com.MBAREK0.web.repository.implementation;
 
 import com.MBAREK0.web.entity.Task;
-import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.repository.TaskRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +31,7 @@ public class TaskRepositoryImpl implements TaskRepository {
         return Optional.ofNullable(user);
     }
 
+    @Override
     public List<Task> getTasksByUserId(Long userId) {
         return entityManager.createQuery("SELECT t FROM Task t WHERE t.user.id = :userId", Task.class)
                 .setParameter("userId", userId)
@@ -38,9 +39,18 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
+    public List<Task> getTasksByManagerId(Long managerId) {
+        TypedQuery<Task> query = entityManager.createQuery(
+                "SELECT t FROM Task t WHERE t.manager.id = :managerId", Task.class);
+        query.setParameter("managerId", managerId);
+        return query.getResultList();
+    }
+
+    @Override
     public List<Task> getAllTasks() {
         return entityManager.createQuery("SELECT t FROM Task t", Task.class).getResultList();
     }
+
 
     @Override
     public Task updateTask(Task task) {

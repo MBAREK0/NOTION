@@ -36,9 +36,12 @@ public class TaskService {
         return taskRepository.getAllTasks();
     }
 
-
-    public List<Task> getTasksByUserId(Long userId) {
+    public List<Task> getAllTasksByUserId(Long userId) {
         return taskRepository.getTasksByUserId(userId);
+    }
+
+    public List<Task> getAllTasksByManagerId(Long userId) {
+        return taskRepository.getTasksByManagerId(userId);
     }
 
 

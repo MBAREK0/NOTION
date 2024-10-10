@@ -40,6 +40,7 @@ public class AuthController extends HttpServlet {
     public void showLoginForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getRequestDispatcher("/WEB-INF/views/auth/auth.jsp").forward(request, response);
     }
+
     public void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getSession().invalidate();
         response.sendRedirect(request.getContextPath() + "/");
@@ -61,7 +62,7 @@ public class AuthController extends HttpServlet {
               request.getSession().setAttribute("user", user);
               request.getSession().setAttribute("role", role);
 
-              response.sendRedirect(request.getContextPath() + "/users");
+              response.sendRedirect(request.getContextPath() + "/tasks");
 
           }else {
               ResponseHandler.handleError(request, response,"", "Invalid email or password.");

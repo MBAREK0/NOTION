@@ -85,11 +85,11 @@
                   <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                       <th scope="col" class="px-6">name</th>
-                      <th scope="col" class="px-6 justify-center">description</th>
+                      <th scope="col" class="px-6">description</th>
                       <th scope="col" class="px-6">status</th>
                       <th scope="col" class="px-6">assigned</th>
-                      <th scope="col" class="px-6 ">manager</th>
-                      <th scope="col" class="px-6 flex justify-center">action</th>
+                         <th scope="col" class="px-6 ">manager</th>
+                      <th scope="col" class="px-6 ">action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -132,9 +132,11 @@
                       <td class="px-6 py-2 font-medium text-gray-900 dark:text-white">
                           ${task.user.username}
                       </td>
+
                       <td class="px-6 py-2 font-medium text-gray-900 dark:text-white">
                           ${task.manager.username}
                       </td>
+
                       <td class="px-8 py-4 flex justify-between gap-1 items-center">
                         <div data-popover-target="popover-bottom-${task.id}" data-popover-placement="bottom" class="cursor-pointer">
                           <p class="text-lg font-medium text-gray-900 dark:text-white">...</p>
@@ -199,11 +201,9 @@
                   <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                       <th scope="col" class="px-6">name</th>
-                      <th scope="col" class="px-6 justify-center">description</th>
+                      <th scope="col" class="px-6 ">description</th>
                       <th scope="col" class="px-6">status</th>
-                      <th scope="col" class="px-6">assigned</th>
-                      <th scope="col" class="px-6 ">manager</th>
-                      <th scope="col" class="px-6 flex justify-center">action</th>
+                      <th scope="col" class="px-6">action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -243,12 +243,6 @@
                         </c:choose>
                       </td>
 
-                      <td class="px-6 py-2 font-medium text-gray-900 dark:text-white">
-                          ${task.user.username}
-                      </td>
-                      <td class="px-6 py-2 font-medium text-gray-900 dark:text-white">
-                          ${task.manager.username}
-                      </td>
                       <td class="px-8 py-4 flex justify-between gap-1 items-center">
                         <div data-popover-target="popover-bottom-${task.id}" data-popover-placement="bottom" class="cursor-pointer">
                           <p class="text-lg font-medium text-gray-900 dark:text-white">...</p>

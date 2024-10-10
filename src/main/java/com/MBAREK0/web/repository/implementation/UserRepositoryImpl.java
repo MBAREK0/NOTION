@@ -3,6 +3,7 @@ package com.MBAREK0.web.repository.implementation;
 
 
 import com.MBAREK0.web.entity.User;
+import com.MBAREK0.web.entity.UserOrManager;
 import com.MBAREK0.web.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -54,6 +55,12 @@ public class UserRepositoryImpl implements UserRepository {
         return Optional.of(user.get(0));
     }
 
+    @Override
+    public List<User> getUsersByRole(UserOrManager role) {
+        return entityManager.createQuery("SELECT u FROM User u WHERE u.role = :role", User.class)
+                .setParameter("role", role)
+                .getResultList();
+    }
 
     @Override
     public List<User> getAllUsers() {

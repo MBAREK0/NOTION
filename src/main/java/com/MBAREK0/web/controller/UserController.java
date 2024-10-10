@@ -1,12 +1,10 @@
 package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.entity.User;
-import com.MBAREK0.web.entity.UserOrManager;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
-import com.MBAREK0.web.util.createObj.CreateUserObj;
-import com.MBAREK0.web.util.validator.UserValidator;
-import com.MBAREK0.web.util.validator.Validator;
+import com.MBAREK0.web.objCreator.CreateObj;
+import com.MBAREK0.web.validation.validator.UserValidator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -16,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +95,7 @@ public class UserController extends HttpServlet {
         User newUser = new User();
 
 
-        if (!CreateUserObj.createUserObj(newUser, request, response)) {
+        if (!CreateObj.createUserObj(newUser, request, response)) {
             return;
         }
 
@@ -124,7 +121,7 @@ public class UserController extends HttpServlet {
             return;
         }
 
-        if (!CreateUserObj.createUserObj(user, request, response)) {
+        if (!CreateObj.createUserObj(user, request, response)) {
             return;
         }
 

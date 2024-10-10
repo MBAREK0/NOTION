@@ -1,4 +1,4 @@
-package com.MBAREK0.web.util.validator;
+package com.MBAREK0.web.validation.validator;
 
 import com.MBAREK0.web.entity.User;
 

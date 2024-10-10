@@ -9,6 +9,9 @@ public interface TaskRepository {
     Task createTask(Task task);
     Optional<Task> getTaskById(Long id);
     List<Task> getTasksByUserId(Long userId);
+
+    List<Task> getTasksByManagerId(Long userId);
+
     List<Task> getAllTasks();
     Task updateTask(Task task);
     Task deleteTask(Long id);

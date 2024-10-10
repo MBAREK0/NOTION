@@ -4,7 +4,7 @@ import com.MBAREK0.web.entity.Tag;
 import com.MBAREK0.web.service.TagService;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
-import com.MBAREK0.web.util.validator.Validator;
+import com.MBAREK0.web.validation.validator.Validator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;

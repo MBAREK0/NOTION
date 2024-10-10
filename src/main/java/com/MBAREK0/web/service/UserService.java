@@ -1,6 +1,7 @@
 package com.MBAREK0.web.service;
 
 import com.MBAREK0.web.entity.User;
+import com.MBAREK0.web.entity.UserOrManager;
 import com.MBAREK0.web.repository.UserRepository;
 import com.MBAREK0.web.repository.implementation.UserRepositoryImpl;
 import com.MBAREK0.web.util.PasswordUtil;
@@ -33,6 +34,10 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.getAllUsers();
+    }
+
+    public List<User> getUsersByRole(UserOrManager role) {
+        return userRepository.getUsersByRole(role);
     }
 
     public User updateUser(User user) {
