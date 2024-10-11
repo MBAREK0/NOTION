@@ -32,8 +32,9 @@
       <%-- Content --%>
       <form class="max-w-2xl mx-auto" action="<%= request.getContextPath() %>/tasks?action=edit" method="post">
         <h1 class="text-3xl font-bold text-gray-800 mb-4">
-          Create New Task
+        Update Task
         </h1>
+        <input type="hidden" name="id" value="${task.id}" />
         <div class="relative z-0 w-full mb-5 group">
           <label for="title" class="block mb-2 text-sm font-medium text-gray-900">Enter the title of the task</label>
           <input type="text" value="${task.title}" name="title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" " required />
@@ -47,15 +48,17 @@
         </div>
 
         <div class="relative z-0 w-full mb-5 group">
-          <label for="task_status" class="sr-only">TAsk Status </label>
+          <label for="task_status" class="sr-only">Task Status </label>
           <select id="task_status" name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
             <option value="${task.status}">${task.status}</option>
-            <c:forEach var="status" items="${statusList}">
-              <c:if test="${status != task.status}">
-                <option value="${status}">${status}</option>
-              </c:if>
-            </c:forEach>
+            <c:if test="${task.status != 'overdue'}">
+              <c:forEach var="status" items="${statusList}">
+                <c:if test="${status != task.status}">
+                  <option value="${status}">${status}</option>
+                </c:if>
+              </c:forEach>
+            </c:if>
           </select>
         </div>
 
@@ -71,7 +74,6 @@
                         <option value="${tag.id}">${tag.name}</option>
                     </c:if>
                 </c:forEach>
-
             </select>
           </div>
 
@@ -88,7 +90,14 @@
               </select>
             </div>
           </c:if>
-
+          <c:if test="${role == 'user'}">
+            <div class="relative z-0 w-full mb-5 group">
+              <label for="states-single2" class="block mb-2 text-sm font-medium text-gray-900">Select users to assign the task</label>
+              <select class=" selectOne w-full" name="userId" id="states-single2">
+                <option value="${task.user.id}">${task.user.username}</option>
+              </select>
+            </div>
+          </c:if>
         </div>
         <div class="grid md:grid-cols-2 md:gap-6">
           <div class="relative z-0 w-full mb-5 group">

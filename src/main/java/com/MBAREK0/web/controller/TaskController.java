@@ -62,9 +62,10 @@ public class TaskController extends HttpServlet {
         } else {
             tasks = taskService.getAllTasksByUserId(user.getId());
         }
-        tasks = taskService.getAllTasksByUserId(user.getId());
         List<Task> managerTasks = tasks.stream().filter(task -> task.getManager().getId() != task.getUser().getId()).toList();
         List<Task> userTasks = tasks.stream().filter(task -> task.getManager().getId() == task.getUser().getId()).toList();
+        String role  = user.getRole().toString();
+        req.setAttribute("role",role);
         req.setAttribute("managerTasks", managerTasks);
         req.setAttribute("userTasks", userTasks);
         req.setAttribute("tasks", tasks);
@@ -102,7 +103,6 @@ public class TaskController extends HttpServlet {
         req.setAttribute("role",role);
         req.setAttribute("users", users);
 
-
         req.getRequestDispatcher("/WEB-INF/views/tasks/createForm.jsp").forward(req, resp);
     }
 
@@ -119,9 +119,12 @@ public class TaskController extends HttpServlet {
         Task task = opTask.get();
 
         // get the status of tag for select options
-        List<String> statusList = List.of(TaskStatus.values()).stream().map(TaskStatus::toString).toList();
-        List<Tag> tags = tagService.gatAllTags();
+        List<String> statusList = new ArrayList<>(List.of(TaskStatus.values()).stream().map(TaskStatus::toString).toList());
+        if (statusList.contains(TaskStatus.overdue.toString())) {
+            statusList.remove(TaskStatus.overdue.toString());
+        }
 
+        List<Tag> tags = tagService.gatAllTags();
         List<User> users = userService.getUsersByRole(UserOrManager.user);
         users = users.stream().filter(user -> user.getId() != ((User) req.getSession().getAttribute("user")).getId()).toList();
 
@@ -155,7 +158,10 @@ public class TaskController extends HttpServlet {
             createTask(req, resp);
         } else if ("edit".equals(action)) {
             updateTask(req, resp);
-        } else {
+        }else if ("update_status".equals(action)) {
+            updateTaskStatus(req, resp);
+        }
+        else {
             listTasks(req, resp);
         }
 
@@ -185,17 +191,41 @@ public class TaskController extends HttpServlet {
 
     private void updateTask(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        Task task = CreateObj.updateTaskObj(userService, tagService, req, resp);
+        Long id = Long.parseLong(req.getParameter("id"));
+        Optional<Task> opTask = taskService.getTaskById(id);
+        if(opTask.isEmpty()){
+            ResponseHandler.handleError(req, resp, "tasks", "Task not found!");
+            return;
+        }
 
-        if(!TaskValidator.isValidTask(task) || task == null){
+        Task task = opTask.get();
+
+        Task UpdatedTask = CreateObj.updateTaskObj(task,userService, tagService, req, resp);
+
+        if(!TaskValidator.isValidTask(UpdatedTask) || UpdatedTask == null){
             ResponseHandler.handleError(req, resp, "tasks", "Task update failed!, Invalid task data.");
             return;
         }
 
-         taskService.updateTask(task);
+        taskService.updateTask(UpdatedTask);
 
         ResponseHandler.handleSuccess(req, resp, "tasks", "Task updated successfully!");
 
     }
 
+    private void updateTaskStatus(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Long id = Long.parseLong(req.getParameter("task_id"));
+        Optional<Task> opTask = taskService.getTaskById(id);
+        if(opTask.isEmpty()){
+            ResponseHandler.handleError(req, resp, "tasks", "Task not found!");
+            return;
+        }
+
+        Task task = opTask.get();
+        TaskStatus status = TaskStatus.valueOf(req.getParameter("status"));
+        task.setStatus(status);
+        taskService.updateTask(task);
+
+        ResponseHandler.handleSuccess(req, resp, "tasks", "Task status updated successfully!");
+    }
 }

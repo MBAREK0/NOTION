@@ -63,6 +63,9 @@ public class User {
     @OneToMany(mappedBy = "manager")
     private List<Task> managedTasks;
 
+    @OneToMany(mappedBy = "user")
+    private List<Inbox> inbox;
+
 
     public User(String username, String password, String firstName, String lastName, String email, UserOrManager role) {
         this.username = username;

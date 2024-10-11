@@ -81,7 +81,7 @@ public class CreateObj {
 
         Task task = new Task(title, description, TaskStatus.pending, LocalDate.parse(startDate), LocalDate.parse(endDate), user , manager);
         task.setTags(new HashSet<>(tagObjList));
-        if(user.getRole().equals(UserOrManager.user)){
+        if(manager.getRole().equals(UserOrManager.user) && user.getRole().equals(UserOrManager.user)){
             task.setUser(manager);
             task.setManager(manager);
         }
@@ -89,7 +89,8 @@ public class CreateObj {
         return task;
     }
 
-    public static Task updateTaskObj( UserService userService, TagService tagService, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    public static Task updateTaskObj(Task task, UserService userService, TagService tagService, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+
         HttpSession session = req.getSession();
 
         String title = req.getParameter("title");
@@ -101,17 +102,10 @@ public class CreateObj {
         String endDate = req.getParameter("endDate");
 
 
-        TaskStatus status= null;
-        try {
-            status = TaskStatus.valueOf(req.getParameter("status"));
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-
-        User manager = (User) session.getAttribute("user");
+        TaskStatus status= TaskStatus.valueOf(req.getParameter("status"));
 
 
-        User user = manager;
+        User user = null ;
 
         if (req.getParameter("userId") != null) {
             Long userId = Long.parseLong(req.getParameter("userId"));
@@ -128,9 +122,7 @@ public class CreateObj {
         List<String> tagsList = null;
         if (tags != null) {
             tagsList = Arrays.asList(tags);
-            // Convert to ArrayList
             tagsList = new ArrayList<>(tagsList);
-
         } else {
             return null;
         }
@@ -140,13 +132,19 @@ public class CreateObj {
             return null;
         }
 
-        Task task = new Task(title, description,status, LocalDate.parse(startDate), LocalDate.parse(endDate), user , manager);
+
+        task.setTitle(title);
+        task.setDescription(description);
+        task.setStatus(status);
+        task.setStartDate(LocalDate.parse(startDate));
+        task.setEndDate(LocalDate.parse(endDate));
+        task.setUser(user);
         task.setTags(new HashSet<>(tagObjList));
         task.setUpdatedAt(LocalDate.now().atStartOfDay());
-        if(user.getRole().equals(UserOrManager.user)){
-            task.setUser(manager);
-            task.setManager(manager);
-        }
+        task.setId(Long.parseLong(req.getParameter("id")));
+
+        User authUser = (User) session.getAttribute("user");
+
 
         return task;
     }

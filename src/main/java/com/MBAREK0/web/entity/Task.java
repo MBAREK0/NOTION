@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -79,6 +80,9 @@ public class Task {
             uniqueConstraints = @UniqueConstraint(columnNames = {"task_id", "tag_id"})
     )
     private Set<Tag> tags = new HashSet<>();
+
+    @OneToMany(mappedBy = "task")
+    private List<Inbox> inbox;
 
 
     public Task(String title, String description, TaskStatus status, LocalDate start_date,LocalDate end_date, User user, User manager) {

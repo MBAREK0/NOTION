@@ -1,6 +1,7 @@
 package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.entity.User;
+import com.MBAREK0.web.entity.UserOrManager;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
 import com.MBAREK0.web.objCreator.CreateObj;
@@ -53,6 +54,10 @@ public class UserController extends HttpServlet {
     }
 
     private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        User user = (User) request.getSession().getAttribute("user");
+        if (user.getRole().equals(UserOrManager.user)){
+            ResponseHandler.handleError(request,response,"","You are not allowed to access this page");
+        }
         List<User> users = userService.getAllUsers();
         request.setAttribute("users", users);
         request.getRequestDispatcher("/WEB-INF/views/users/userList.jsp").forward(request, response);

@@ -1,11 +1,13 @@
 package com.MBAREK0.web.entity;
 
+
 import jakarta.persistence.*;
+import jdk.jfr.Enabled;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * CREATE TABLE manager_box (
@@ -20,10 +22,10 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "manager_box")
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-public class ManagerBox {
+public class Inbox {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,29 +39,18 @@ public class ManagerBox {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "message", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String message;
 
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt = LocalDateTime.now(); // Direct initialization
+    @Column(name = "created_at", nullable = false)
+    private LocalDate createdAt;
 
-
-    public ManagerBox(Task task, User user, String message) {
+    public Inbox(Task task, User user, String message) {
         this.task = task;
         this.user = user;
         this.message = message;
-        // createdAt is already initialized directly
+        this.createdAt = LocalDate.now();
     }
 
 
-    @Override
-    public String toString() {
-        return "ManagerBox{" +
-                "id=" + id +
-                ", task=" + task +
-                ", user=" + user +
-                ", message='" + message + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
-    }
 }
