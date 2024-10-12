@@ -68,6 +68,9 @@ public class Task {
     @JoinColumn(name = "manager_id")
     private User manager;
 
+    @OneToMany(mappedBy = "task")
+    private List<TaskHistory> taskHistories;
+
     @Column(name = "ischanged" , columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isChanged;
 
@@ -119,6 +122,16 @@ public class Task {
        boolean removed =  tags.remove(tag);
          if (removed)
         tag.getTasks().remove(this);
+    }
+
+    public void addTaskHistory(TaskHistory taskHistory) {
+        taskHistories.add(taskHistory);
+        taskHistory.setTask(this);
+    }
+
+    public void removeTaskHistory(TaskHistory taskHistory) {
+        taskHistories.remove(taskHistory);
+        taskHistory.setTask(null);
     }
 
 }

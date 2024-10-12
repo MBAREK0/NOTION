@@ -3,6 +3,7 @@ package com.MBAREK0.web.controller;
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.*;
 import com.MBAREK0.web.service.InboxService;
+import com.MBAREK0.web.service.TaskHistoryService;
 import com.MBAREK0.web.service.TaskService;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
@@ -27,6 +28,7 @@ public class InboxController extends HttpServlet {
     private InboxService inboxService;
     private TaskService taskService;
     private UserService userService;
+    private TaskHistoryService taskHistoryService;
 
     public InboxController() {
         entityManagerFactory = Persistence.createEntityManagerFactory("default");
@@ -34,6 +36,7 @@ public class InboxController extends HttpServlet {
         inboxService = new InboxService(entityManager);
         taskService = new TaskService(entityManager);
         userService = new UserService(entityManager);
+        taskHistoryService = new TaskHistoryService(entityManager);
     }
 
 
@@ -47,9 +50,7 @@ public class InboxController extends HttpServlet {
 
         if ("list".equals(action)) {
             listInbox(req, resp);
-        } else if ("create_request".equals(action)) {
-            createRequest(req, resp);
-        }else if ("accept".equals(action)) {
+        } else if ("accept".equals(action)) {
             acceptRequest(req, resp);
         } else {
             listInbox(req, resp);
@@ -64,50 +65,6 @@ public class InboxController extends HttpServlet {
         req.setAttribute("formatter", formatter);
         req.setAttribute("inboxes", inboxes);
         req.getRequestDispatcher("/WEB-INF/views/inboxes/inboxList.jsp").forward(req, resp);
-    }
-
-    private void createRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String strId = req.getParameter("id");
-
-        Long id = 0L;
-
-        if (strId != null) id = Long.parseLong(strId);
-        else ResponseHandler.handleError(req, resp,"tasks", "Task id is required");
-
-
-        Optional<Task> opTask = taskService.getTaskById(id);
-        if (opTask.isEmpty()) ResponseHandler.handleError(req, resp,"tasks", "Task not found");
-
-        Task task = opTask.get();
-        User user = task.getUser();
-        User manager = task.getManager();
-        Token token = user.getToken();
-
-        if (token.getModifyTokenCount() == 0) {
-            ResponseHandler.handleError(req, resp,"tasks", "You don't have enough modify token");
-            return;
-        }
-
-        Inbox inbox = new Inbox(task, user, manager);
-
-
-        if (task.isChanged() == true) {
-            ResponseHandler.handleError(req, resp,"tasks", "Task already changed");
-            return;
-        }
-
-        inbox = inboxService.createInbox(inbox);
-
-        if (inbox.getId() != null) {
-
-            token.setModifyTokenCount(token.getModifyTokenCount() - 1);
-            user.setToken(token);
-            userService.updateUser(user);
-            req.getSession().setAttribute("user", user);
-            ResponseHandler.handleSuccess(req, resp, "tasks", "Request sent successfully");
-        }
-        else ResponseHandler.handleError(req, resp, "tasks", "Request failed");
-
     }
 
     private void acceptRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -158,6 +115,8 @@ public class InboxController extends HttpServlet {
 
         Long taskId = Long.parseLong(strTaskId);
         Long userId = Long.parseLong(strUserId);
+        Long inboxId = Long.parseLong(strInboxId);
+
 
         Optional<Task> opTask = taskService.getTaskById(taskId);
         if (opTask.isEmpty()) {
@@ -183,8 +142,10 @@ public class InboxController extends HttpServlet {
         task = taskService.updateTask(task);
 
         if (task.getId() != null) {
-            Long inboxId = Long.parseLong(strInboxId);
-           if (inboxService.deleteInbox(inboxId) != null) ResponseHandler.handleSuccess(req, resp, "tasks", "Task assigned successfully");
+
+           if (inboxService.deleteInbox(inboxId) != null) {
+               ResponseHandler.handleSuccess(req, resp, "tasks", "Task assigned successfully");
+           }
            else ResponseHandler.handleError(req, resp, "inbox", "Task assignment failed");
         }  else ResponseHandler.handleError(req, resp, "inbox", "Task assignment failed");
 

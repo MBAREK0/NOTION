@@ -10,14 +10,17 @@ import java.time.LocalDateTime;
 
 
 /**
- * CREATE TABLE task_history (
- *     id SERIAL PRIMARY KEY,
- *     task_id INT NOT NULL,  -- Foreign key to reference the associated task
- *     change_type VARCHAR(20) NOT NULL CHECK (change_type IN ('modification', 'deletion')),  -- Change type: modification or deletion
- *     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp of the record creation
- *     status VARCHAR(20) NOT NULL CHECK (status IN ('accepted', 'pending')),  -- Status of the change
- *     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE  -- Ensures that task history is deleted if the task is deleted
- * );
+ *
+ CREATE TABLE task_history (
+ id SERIAL PRIMARY KEY,
+ task_id INT NOT NULL,  -- Foreign key to reference the associated task
+ inbox_id INT NOT NULL,  -- Foreign key to reference the manager inbox
+ change_type VARCHAR(20) NOT NULL CHECK (change_type IN ('modification', 'deletion')),  -- Change type: modification or deletion
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp of the record creation
+ status VARCHAR(20) NOT NULL CHECK (status IN ('accepted', 'pending')),  -- Status of the change
+ FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE , -- Ensures that task history is deleted if the task is deleted
+ FOREIGN KEY (inbox_id) REFERENCES manager_box(id) ON DELETE CASCADE
+ );
  */
 @Entity
 @Table(name = "task_history")
@@ -33,6 +36,10 @@ public class TaskHistory {
     @ManyToOne
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
+
+    @OneToOne
+    @JoinColumn(name = "inbox_id", nullable = false)
+    private Inbox inbox;
 
     @Column(name = "change_type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -61,13 +68,4 @@ public class TaskHistory {
     }
 
 
-    @Override
-    public String toString() {
-        return "TaskHistory{" +
-                "status=" + status +
-                ", createdAt=" + createdAt +
-                ", changeType=" + changeType +
-                ", task=" + task +
-                '}';
-    }
 }

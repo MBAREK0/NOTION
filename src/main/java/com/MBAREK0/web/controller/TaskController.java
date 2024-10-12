@@ -2,6 +2,7 @@ package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.*;
+import com.MBAREK0.web.service.InboxService;
 import com.MBAREK0.web.service.TagService;
 import com.MBAREK0.web.service.TaskService;
 import com.MBAREK0.web.service.UserService;
@@ -26,12 +27,14 @@ public class TaskController extends HttpServlet {
     private TaskService taskService;
     private TagService tagService;
     private UserService userService;
+    private InboxService inboxService;
 
     public TaskController() {
         entityManager = PersistenceManager.getEntityManager();
         taskService = new TaskService(entityManager);
         tagService = new TagService(entityManager);
         userService = new UserService(entityManager);
+        inboxService = new InboxService(entityManager);
     }
 
 
@@ -47,7 +50,10 @@ public class TaskController extends HttpServlet {
             deleteTask(req, resp);
         }else if ("details".equals(action)) {
             taskDetails(req, resp);
-        }else {
+        } else if ("create_request".equals(action)) {
+            createRequest(req, resp);
+        }
+        else {
             listTasks(req, resp);
         }
     }
@@ -152,6 +158,56 @@ public class TaskController extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/views/tasks/editForm.jsp").forward(req, resp);
 
 }
+
+    private void createRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String strId = req.getParameter("id");
+
+        Long id = 0L;
+
+        if (strId != null) id = Long.parseLong(strId);
+        else ResponseHandler.handleError(req, resp,"tasks", "Task id is required");
+
+
+        Optional<Task> opTask = taskService.getTaskById(id);
+        if (opTask.isEmpty()) ResponseHandler.handleError(req, resp,"tasks", "Task not found");
+
+        Task task = opTask.get();
+        User user = task.getUser();
+        User manager = task.getManager();
+        Token token = user.getToken();
+
+        if (token.getModifyTokenCount() == 0) {
+            ResponseHandler.handleError(req, resp,"tasks", "You don't have enough modify token");
+            return;
+        }
+
+        Inbox inbox = new Inbox(task, user, manager);
+
+
+        if (task.isChanged() == true) {
+            ResponseHandler.handleError(req, resp,"tasks", "Task already changed");
+            return;
+        }
+
+        inbox = inboxService.createInbox(inbox);
+
+        if (inbox.getId() != null) {
+
+            token.setModifyTokenCount(token.getModifyTokenCount() - 1);
+            user.setToken(token);
+            userService.updateUser(user);
+            req.getSession().setAttribute("user", user);
+
+            TaskHistory taskHistory = new TaskHistory(task,ChangeType.modification);
+            taskHistory.setInbox(inbox);
+            task.addTaskHistory(taskHistory);
+            taskService.updateTask(task);
+            ResponseHandler.handleSuccess(req, resp, "tasks", "Request sent successfully");
+        }
+        else ResponseHandler.handleError(req, resp, "tasks", "Request failed");
+
+    }
+
 
     private void deleteTask(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Long id = Long.parseLong(req.getParameter("id"));

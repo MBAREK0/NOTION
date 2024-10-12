@@ -24,6 +24,9 @@ public class ManagerFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         UserOrManager role = (UserOrManager) httpRequest.getSession().getAttribute("role");
+        String requestURI = httpRequest.getRequestURI();
+        String actionParam = httpRequest.getParameter("action");
+
 
         if (role == null || !role.equals(UserOrManager.manager)) {
             ((HttpServletResponse) response).sendRedirect(httpRequest.getContextPath() + "/");

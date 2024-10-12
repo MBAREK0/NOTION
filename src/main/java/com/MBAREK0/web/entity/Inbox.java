@@ -2,13 +2,12 @@ package com.MBAREK0.web.entity;
 
 
 import jakarta.persistence.*;
-import jdk.jfr.Enabled;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * CREATE TABLE manager_box (
@@ -46,6 +45,10 @@ public class Inbox {
     @JoinColumn(name = "manager_id", nullable = false)
     private User manager;
 
+    @OneToOne(mappedBy = "inbox")
+    private TaskHistory taskHistory;
+
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -55,6 +58,7 @@ public class Inbox {
         this.manager = manager;
         this.createdAt = LocalDateTime.now();
     }
+
 
 
 }

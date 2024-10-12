@@ -1,4 +1,11 @@
 package com.MBAREK0.web.repository;
 
-public class TaskHistoryRepository {
+import com.MBAREK0.web.entity.TaskHistory;
+
+import java.util.Optional;
+
+public interface TaskHistoryRepository {
+
+
+
 }

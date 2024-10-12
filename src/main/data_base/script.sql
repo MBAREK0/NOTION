@@ -60,10 +60,12 @@ CREATE TABLE tokens (
 CREATE TABLE task_history (
     id SERIAL PRIMARY KEY,
     task_id INT NOT NULL,  -- Foreign key to reference the associated task
+    inbox_id INT NOT NULL,  -- Foreign key to reference the manager inbox
     change_type VARCHAR(20) NOT NULL CHECK (change_type IN ('modification', 'deletion')),  -- Change type: modification or deletion
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp of the record creation
     status VARCHAR(20) NOT NULL CHECK (status IN ('accepted', 'pending')),  -- Status of the change
-    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE  -- Ensures that task history is deleted if the task is deleted
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE , -- Ensures that task history is deleted if the task is deleted
+    FOREIGN KEY (inbox_id) REFERENCES manager_box(id) ON DELETE CASCADE
 );
 
 CREATE TABLE manager_box (
@@ -105,8 +107,8 @@ $$ LANGUAGE plpgsql;
 -- Create a job to run the function every day at midnight
 SELECT cron.schedule(
                'reset_modify_tokens to 2',  -- Job name
-               '0 0 * * *',                                     -- Cron expression: At 00:00 every day
-       $$SELECT reset_modify_tokens();$$                        -- Job command
+               '0 0 * * *',                 -- Cron expression: At 00:00 every day
+       $$SELECT reset_modify_tokens();$$    -- Job command
 );
 
 ----------------------------------------------------------------------------------
@@ -126,3 +128,8 @@ SELECT cron.schedule(
        '0 0 1 * *',                            -- Cron expression: At 00:00 every day
        $$SELECT reset_delete_tokens();$$       -- Job command
 );
+
+----------------------------------------------------------------------------------
+-- commands
+ -- This command will show all the jobs scheduled in the database
+SELECT * FROM cron.job ORDER BY jobid;

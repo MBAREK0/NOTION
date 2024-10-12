@@ -143,14 +143,14 @@ public class UserController extends HttpServlet {
         }
 
         user.setUpdatedAt(LocalDateTime.now());
-        if (user.getRole().equals(UserOrManager.user)){
-            tokenService.saveTokenForUser(user);
-        }else{
-            if (user.getToken() != null){
-                tokenService.deleteToken(user.getToken());
-                user.setToken(null);
-            }
-        }
+//        if (user.getRole().equals(UserOrManager.user)){
+//            tokenService.saveTokenForUser(user);
+//        }else{
+//            if (user.getToken() != null){
+//                tokenService.deleteToken(user.getToken());
+//                user.setToken(null);
+//            }
+//        }
 
         userService.updateUser(user);
         ResponseHandler.handleSuccess(request, response, "users","User updated successfully.");
