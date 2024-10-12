@@ -28,6 +28,10 @@
         <servlet-name>DateController</servlet-name>
         <servlet-class>com.MBAREK0.web.controller.DateController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>InboxController</servlet-name>
+        <servlet-class>com.MBAREK0.web.controller.InboxController</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>Test</servlet-name>
@@ -53,6 +57,11 @@
         <servlet-name>DateController</servlet-name>
         <url-pattern>/date</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>InboxController</servlet-name>
+        <url-pattern>/inbox</url-pattern>
+    </servlet-mapping>
+
 
 
     <!-- filters   -->
@@ -72,6 +81,10 @@
     <filter-mapping>
         <filter-name>ManagerFilter</filter-name>
         <url-pattern>/users/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>ManagerFilter</filter-name>
+        <url-pattern>/inbox/*</url-pattern>
     </filter-mapping>
 
 

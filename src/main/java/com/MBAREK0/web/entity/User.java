@@ -66,6 +66,14 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Inbox> inbox;
 
+    @OneToMany(mappedBy = "manager")
+    private List<Inbox> managerInbox;
+
+    @Setter
+    @Getter
+    @OneToOne(mappedBy = "user")
+    private Token token;
+
 
     public User(String username, String password, String firstName, String lastName, String email, UserOrManager role) {
         this.username = username;
@@ -90,16 +98,5 @@ public class User {
     }
 
 
-    @Override
-    public String toString() {
-        return "User{" +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", role='" + role + '\'' +
-                '}';
-    }
 }
 

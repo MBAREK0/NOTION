@@ -1,5 +1,6 @@
 package com.MBAREK0.web.controller;
 
+import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserOrManager;
 import com.MBAREK0.web.util.PasswordUtil;
@@ -16,13 +17,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class AuthController extends HttpServlet {
-    private EntityManagerFactory entityManagerFactory;
+
     private UserService userService;
     private EntityManager entityManager;
 
     public AuthController() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        entityManager = entityManagerFactory.createEntityManager();
+        entityManager = PersistenceManager.getEntityManager();
         userService = new UserService(entityManager);
     }
 
@@ -74,5 +74,9 @@ public class AuthController extends HttpServlet {
       }
     }
 
+    @Override
+    public void destroy() {
+        PersistenceManager.close();
+    }
 
 }

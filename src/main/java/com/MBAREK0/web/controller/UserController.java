@@ -1,7 +1,9 @@
 package com.MBAREK0.web.controller;
 
+import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserOrManager;
+import com.MBAREK0.web.service.TokenService;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
 import com.MBAREK0.web.objCreator.CreateObj;
@@ -21,14 +23,14 @@ import java.util.Optional;
 
 public class UserController extends HttpServlet {
 
-    private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
     private UserService userService;
+    private TokenService tokenService ;
 
     public UserController() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        entityManager = entityManagerFactory.createEntityManager();
+        entityManager = PersistenceManager.getEntityManager();
         userService = new UserService(entityManager);
+        tokenService = new TokenService(entityManager);
     }
 
     @Override
@@ -114,6 +116,11 @@ public class UserController extends HttpServlet {
             return;
         }
 
+        if (newUser.getRole().equals(UserOrManager.user)){
+            tokenService.saveTokenForUser(newUser);
+        }
+
+
         ResponseHandler.handleSuccess(request, response,"users", "User created successfully.");
     }
 
@@ -136,9 +143,22 @@ public class UserController extends HttpServlet {
         }
 
         user.setUpdatedAt(LocalDateTime.now());
+        if (user.getRole().equals(UserOrManager.user)){
+            tokenService.saveTokenForUser(user);
+        }else{
+            if (user.getToken() != null){
+                tokenService.deleteToken(user.getToken());
+                user.setToken(null);
+            }
+        }
+
         userService.updateUser(user);
         ResponseHandler.handleSuccess(request, response, "users","User updated successfully.");
     }
 
 
+    @Override
+    public void destroy() {
+        PersistenceManager.close();
+    }
 }

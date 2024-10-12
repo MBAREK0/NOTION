@@ -28,14 +28,13 @@
 
 
                 <ol class="relative text-gray-500 border-s border-gray-200 dark:border-gray-700 dark:text-gray-400">
-                    <li class="mb-10 ms-6">
+                    <li class="mb-10 ms-6 flex items-center">
                         <span class="absolute flex items-center justify-center w-8 h-8 bg-green-200 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-green-900">
                             <svg class="w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
                             </svg>
                         </span>
-                        <h3 class="font-medium leading-tight">Task Title</h3>
-                        <p class="text-sm">${task.title}</p>
+                        <h3 class="font-medium leading-tight">${task.title}</h3>
                     </li>
 
                     <li class="mb-10 ms-6">
@@ -47,19 +46,18 @@
                         <h3 class="font-medium leading-tight">Description</h3>
                         <p class="text-sm">${task.description}</p>
                     </li>
-                    <li class="mb-10 ms-6">
+                    <li class="mb-10 ms-6 flex items-center" >
                         <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
                           <svg class="flex-shrink-0 w-3.5 h-3.5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
                               <path fill-rule="evenodd" clip-rule="evenodd" d="M16 8L8 0H0V8L8 16L16 8ZM4.5 6C5.32843 6 6 5.32843 6 4.5C6 3.67157 5.32843 3 4.5 3C3.67157 3 3 3.67157 3 4.5C3 5.32843 3.67157 6 4.5 6Z" fill="currentColor"/>
                           </svg>
                         </span>
-                        <h3 class="font-medium leading-tight">Tags</h3>
                         <c:forEach var="tag" items="${task.tags}">
                             <span class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">${tag.name}</span>
                         </c:forEach>
                     </li>
 
-                    <li class="mb-10 ms-6 flex justify-start items-center">
+                    <li class="mb-10 ms-6 flex  items-center">
                         <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
                             <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm1.5 18h-3v-8h3v8zm0-10h-3V5h3v3z"/>
@@ -116,7 +114,7 @@
 
                     </li>
 
-                    <li class="ms-6">
+                    <li class="ms-6 flex items-center">
                         <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
                            <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 64 64">
                                 <circle cx="32" cy="32" r="5.629" />
@@ -125,12 +123,12 @@
                                 <path d="M32 59.5C16.837 59.5 4.5 47.164 4.5 32 4.5 16.836 16.837 4.5 32 4.5S59.5 16.836 59.5 32C59.5 47.164 47.163 59.5 32 59.5zM32 10.132c-12.058 0-21.868 9.81-21.868 21.868 0 12.058 9.81 21.868 21.868 21.868S53.868 44.058 53.868 32C53.868 19.942 44.058 10.132 32 10.132z" />
                             </svg>
                         </span>
-                        <h3 class="font-medium leading-tight">Deadline</h3>
-                       <div class="flex justify-start items-center gap-1">
+
+                       <h3 class="font-medium leading-tight flex justify-start items-center gap-1">
                            <p class="text-sm">${formattedStartDate}</p>
                            <p class="text-blue-400">to</p>
                            <p class="text-sm">${formattedEndDate}</p>
-                       </div>
+                       </h3>
                     </li>
 
                 </ol>

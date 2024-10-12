@@ -8,16 +8,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * CREATE TABLE manager_box (
  *     id SERIAL PRIMARY KEY,
  *     task_id INT NOT NULL,
  *     user_id INT NOT NULL,
+ *     manager_id INT NOT NULL,
  *     message TEXT NOT NULL,
  *     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
  *     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
- *     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+ *     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+ *     FOREIGN KEY (manager_id) REFERENCES users(id) ON DELETE CASCADE
  * );
  */
 @Entity
@@ -39,17 +42,18 @@ public class Inbox {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String message;
+    @ManyToOne
+    @JoinColumn(name = "manager_id", nullable = false)
+    private User manager;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
-    public Inbox(Task task, User user, String message) {
+    public Inbox(Task task, User user,User manager) {
         this.task = task;
         this.user = user;
-        this.message = message;
-        this.createdAt = LocalDate.now();
+        this.manager = manager;
+        this.createdAt = LocalDateTime.now();
     }
 
 

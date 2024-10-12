@@ -22,7 +22,7 @@ public class Validator {
     }
 
     public static boolean isValidDescription(String description) {
-        return description.length() <= 1000 && description.length() > 0;
+        return description.length() <= 2500 && description.length() > 0;
     }
 
     public static boolean isValidStatus(String status) {

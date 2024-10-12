@@ -15,11 +15,10 @@ import java.time.LocalDateTime;
  *     task_id INT NOT NULL,  -- Foreign key to reference the associated task
  *     change_type VARCHAR(20) NOT NULL CHECK (change_type IN ('modification', 'deletion')),  -- Change type: modification or deletion
  *     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp of the record creation
- *     status VARCHAR(20) NOT NULL CHECK (status IN ('accepted', 'nonaccepted', 'pending')),  -- Status of the change
+ *     status VARCHAR(20) NOT NULL CHECK (status IN ('accepted', 'pending')),  -- Status of the change
  *     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE  -- Ensures that task history is deleted if the task is deleted
  * );
  */
-
 @Entity
 @Table(name = "task_history")
 @Getter

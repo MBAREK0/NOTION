@@ -49,13 +49,11 @@ CREATE TABLE task_tags (
 CREATE TABLE tokens (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    task_id INT NOT NULL, -- this should be removed because it is not needed
     modify_token_count INT DEFAULT 2,  -- 2 tokens per day for task modification
     delete_token_count INT DEFAULT 1,  -- 1 delete token per month
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
 
 
@@ -64,7 +62,7 @@ CREATE TABLE task_history (
     task_id INT NOT NULL,  -- Foreign key to reference the associated task
     change_type VARCHAR(20) NOT NULL CHECK (change_type IN ('modification', 'deletion')),  -- Change type: modification or deletion
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp of the record creation
-    status VARCHAR(20) NOT NULL CHECK (status IN ('accepted', 'nonaccepted', 'pending')),  -- Status of the change
+    status VARCHAR(20) NOT NULL CHECK (status IN ('accepted', 'pending')),  -- Status of the change
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE  -- Ensures that task history is deleted if the task is deleted
 );
 
@@ -72,8 +70,59 @@ CREATE TABLE manager_box (
     id SERIAL PRIMARY KEY,
     task_id INT NOT NULL,
     user_id INT NOT NULL,
-    message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+/**
+  -- when add user should add new field in token table
+  -- when someone send request to the manger
+    -- should add new field in task_history table
+    -- should update the token of update t=t-1
+    -- if t=0 then should not allow to update the task
+  -- when manager accept the request should change the status in task_history table
+  -- track the task history
+    -- create shedouler function run every day to check the task status
+        -- if task is overdue then update the status in task table
+    -- create shedouler function run every month to check the delete token
+        -- update the delete token in token table to 1
+    -- when delete the task should add the record in task_history table
+ */
+
+----------------------------------------------------------------------------------
+-- Create a function to reset the modify_token_count to 2 for all users every day
+
+CREATE OR REPLACE FUNCTION reset_modify_tokens()
+RETURNS void AS $$
+BEGIN
+    UPDATE tokens
+    SET modify_token_count = 2,
+        updated_at = CURRENT_TIMESTAMP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a job to run the function every day at midnight
+SELECT cron.schedule(
+               'reset_modify_tokens to 2',  -- Job name
+               '0 0 * * *',                                     -- Cron expression: At 00:00 every day
+       $$SELECT reset_modify_tokens();$$                        -- Job command
+);
+
+----------------------------------------------------------------------------------
+ -- Create a function to reset the delete_token_count to 1 for all users every month
+CREATE OR REPLACE FUNCTION reset_delete_tokens()
+RETURNS void AS $$
+BEGIN
+    UPDATE tokens
+    SET delete_token_count = 1,
+        updated_at = CURRENT_TIMESTAMP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a job to run the function every month on the 1st day at midnight
+SELECT cron.schedule(
+       'Monthly reset of delete tokens to 1',  -- Job name
+       '0 0 1 * *',                            -- Cron expression: At 00:00 every day
+       $$SELECT reset_delete_tokens();$$       -- Job command
 );

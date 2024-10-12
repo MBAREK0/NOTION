@@ -121,21 +121,4 @@ public class Task {
         tag.getTasks().remove(this);
     }
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", user=" + user +
-                ", manager=" + manager +
-                ", isChanged=" + isChanged +
-                ", tags=" + tags +
-                '}';
-    }
 }

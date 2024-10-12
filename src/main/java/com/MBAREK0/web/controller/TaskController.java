@@ -1,5 +1,6 @@
 package com.MBAREK0.web.controller;
 
+import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.*;
 import com.MBAREK0.web.service.TagService;
 import com.MBAREK0.web.service.TaskService;
@@ -20,22 +21,19 @@ import java.io.IOException;
 import java.util.*;
 
 public class TaskController extends HttpServlet {
-    private EntityManagerFactory entityManagerFactory;
+
     private EntityManager entityManager;
     private TaskService taskService;
     private TagService tagService;
     private UserService userService;
 
     public TaskController() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        entityManager = entityManagerFactory.createEntityManager();
+        entityManager = PersistenceManager.getEntityManager();
         taskService = new TaskService(entityManager);
         tagService = new TagService(entityManager);
         userService = new UserService(entityManager);
     }
-    @Override
-    public void init() throws ServletException {
-    }
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -56,16 +54,31 @@ public class TaskController extends HttpServlet {
 
     private void listTasks(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user = (User) req.getSession().getAttribute("user");
+
         List<Task> tasks;
+
         if (user.getRole().equals(UserOrManager.manager)) {
             tasks = taskService.getAllTasksByManagerId(user.getId());
         } else {
             tasks = taskService.getAllTasksByUserId(user.getId());
         }
+
         List<Task> managerTasks = tasks.stream().filter(task -> task.getManager().getId() != task.getUser().getId()).toList();
         List<Task> userTasks = tasks.stream().filter(task -> task.getManager().getId() == task.getUser().getId()).toList();
-        String role  = user.getRole().toString();
-        req.setAttribute("role",role);
+
+        List<String> statusList = new ArrayList<>(List.of(TaskStatus.values()).stream().map(TaskStatus::toString).toList());
+        if (statusList.contains(TaskStatus.overdue.toString())) {
+            statusList.remove(TaskStatus.overdue.toString());
+        }
+
+        if (user.getRole().equals(UserOrManager.user)) {
+            int m_token = user.getToken().getModifyTokenCount();
+            int d_token = user.getToken().getDeleteTokenCount();
+            req.setAttribute("m_token", m_token);
+            req.setAttribute("d_token", d_token);
+        }
+
+        req.setAttribute("statusList", statusList);
         req.setAttribute("managerTasks", managerTasks);
         req.setAttribute("userTasks", userTasks);
         req.setAttribute("tasks", tasks);
@@ -226,6 +239,11 @@ public class TaskController extends HttpServlet {
         task.setStatus(status);
         taskService.updateTask(task);
 
-        ResponseHandler.handleSuccess(req, resp, "tasks", "Task status updated successfully!");
+        resp.sendRedirect(req.getContextPath() + "/tasks");
+    }
+
+    @Override
+    public void destroy() {
+        PersistenceManager.close();
     }
 }

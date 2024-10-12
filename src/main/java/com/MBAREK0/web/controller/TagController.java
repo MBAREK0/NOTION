@@ -1,5 +1,6 @@
 package com.MBAREK0.web.controller;
 
+import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.Tag;
 import com.MBAREK0.web.service.TagService;
 import com.MBAREK0.web.service.UserService;
@@ -19,14 +20,12 @@ import java.util.Optional;
 
 public class TagController extends HttpServlet {
 
-    private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
     private TagService tagService;
     private UserService userService;
 
     public TagController() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        entityManager = entityManagerFactory.createEntityManager();
+        entityManager = PersistenceManager.getEntityManager();
         tagService = new TagService(entityManager);
         userService = new UserService(entityManager);
     }
@@ -54,10 +53,8 @@ public class TagController extends HttpServlet {
     }
 
     private void listTags(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         List<Tag> tags = tagService.gatAllTags();
         req.setAttribute("tags", tags);
-
         req.getRequestDispatcher("/WEB-INF/views/tags/tagList.jsp").forward(req, resp);
     }
 
@@ -156,5 +153,9 @@ public class TagController extends HttpServlet {
         ResponseHandler.handleSuccess(req, resp, "tags", "Tag deleted successfully");
     }
 
+    @Override
+    public void destroy() {
+        PersistenceManager.close();
+    }
 
 }
