@@ -1,6 +1,7 @@
 package com.MBAREK0.web.repository;
 
 import com.MBAREK0.web.entity.Task;
+import com.MBAREK0.web.entity.TaskModificationRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +16,13 @@ public interface TaskRepository {
     List<Task> getAllTasks();
     Task updateTask(Task task);
     Task deleteTask(Long id);
+    TaskModificationRequest requestTaskModification(TaskModificationRequest request);
+
+    List<TaskModificationRequest> getAllTaskModificationRequestsByManagerId(Long managerId);
+
+    Optional<TaskModificationRequest> getTaskModificationRequestById(Long id);
+
+    TaskModificationRequest removeTaskModificationRequest(TaskModificationRequest request);
+
+    List<TaskModificationRequest> getPendingRequestsOlderThan12Hours();
 }

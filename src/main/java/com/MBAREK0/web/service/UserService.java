@@ -47,4 +47,8 @@ public class UserService {
     public User deleteUser(Long id) {
         return userRepository.deleteUser(id);
     }
+
+    public List<User> getUsersWithEligibleDoubleTokens() {
+        return userRepository.getUsersWithEligibleDoubleTokens();
+    }
 }

@@ -3,7 +3,6 @@ package com.MBAREK0.web.controller;
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.*;
 import com.MBAREK0.web.service.InboxService;
-import com.MBAREK0.web.service.TaskHistoryService;
 import com.MBAREK0.web.service.TaskService;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
@@ -16,7 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,6 @@ public class InboxController extends HttpServlet {
     private InboxService inboxService;
     private TaskService taskService;
     private UserService userService;
-    private TaskHistoryService taskHistoryService;
 
     public InboxController() {
         entityManagerFactory = Persistence.createEntityManagerFactory("default");
@@ -36,7 +35,6 @@ public class InboxController extends HttpServlet {
         inboxService = new InboxService(entityManager);
         taskService = new TaskService(entityManager);
         userService = new UserService(entityManager);
-        taskHistoryService = new TaskHistoryService(entityManager);
     }
 
 
@@ -59,35 +57,48 @@ public class InboxController extends HttpServlet {
 
     private void listInbox(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         User user = (User) req.getSession().getAttribute("user");
-        List<Inbox> inboxes = inboxService.getAllInboxByUserId(user.getId());
+        List<TaskModificationRequest> requests = taskService.getAllTaskModificationRequestsByManagerId(user.getId());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm");
 
         req.setAttribute("formatter", formatter);
-        req.setAttribute("inboxes", inboxes);
+        req.setAttribute("inboxes", requests);
         req.getRequestDispatcher("/WEB-INF/views/inboxes/inboxList.jsp").forward(req, resp);
     }
 
     private void acceptRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         String strId = req.getParameter("id");
 
+
         Long id = 0L;
         if (strId != null) id = Long.parseLong(strId);
         else ResponseHandler.handleError(req, resp, "inbox", "Inbox id is required");
 
 
-        Optional<Inbox> opInbox = inboxService.getInboxById(id);
-        if (opInbox.isEmpty()) ResponseHandler.handleError(req, resp, "inbox", "Inbox not found");
+        Optional<TaskModificationRequest> request = taskService.getTaskModificationRequestById(Long.parseLong(strId));
 
-        Inbox inbox = opInbox.get();
-        User user = inbox.getUser();
-        Task task = inbox.getTask();
+        if (request.isEmpty()) ResponseHandler.handleError(req, resp, "inbox", "Inbox not found");
+
+        TaskModificationRequest taskModificationRequest = request.get();
+        User user = taskModificationRequest.getUser();
+        Task task = taskModificationRequest.getTask();
+
+        taskModificationRequest.setManagerResponse(true);
+        taskModificationRequest.setResponseTime(LocalDateTime.now());
+
+        long hoursBetween = Duration.between(taskModificationRequest.getRequestTime(), LocalDateTime.now()).toHours();
+        if (hoursBetween >= 12) {
+
+            taskService.removeTaskModificationRequest(taskModificationRequest);
+            ResponseHandler.handleError(req, resp, "inbox", "Task modification request expired");
+            return;
+        }
 
         List<User> users = userService.getUsersByRole(UserOrManager.user);
         users = users.stream().filter(u -> u != user).toList();
 
         req.setAttribute("users", users);
         req.setAttribute("task", task);
-        req.setAttribute("inbox", inbox);
+        req.setAttribute("inbox", taskModificationRequest);
         req.getRequestDispatcher("/WEB-INF/views/inboxes/changeAssignedUser.jsp").forward(req, resp);
 
     }

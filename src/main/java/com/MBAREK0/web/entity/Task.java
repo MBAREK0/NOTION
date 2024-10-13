@@ -69,7 +69,7 @@ public class Task {
     private User manager;
 
     @OneToMany(mappedBy = "task")
-    private List<TaskHistory> taskHistories;
+    private List<TaskModificationRequest> taskModificationRequests;
 
     @Column(name = "ischanged" , columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isChanged;
@@ -124,14 +124,5 @@ public class Task {
         tag.getTasks().remove(this);
     }
 
-    public void addTaskHistory(TaskHistory taskHistory) {
-        taskHistories.add(taskHistory);
-        taskHistory.setTask(this);
-    }
-
-    public void removeTaskHistory(TaskHistory taskHistory) {
-        taskHistories.remove(taskHistory);
-        taskHistory.setTask(null);
-    }
 
 }

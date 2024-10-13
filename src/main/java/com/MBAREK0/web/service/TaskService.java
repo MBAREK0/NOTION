@@ -1,6 +1,8 @@
 package com.MBAREK0.web.service;
 
 import com.MBAREK0.web.entity.Task;
+import com.MBAREK0.web.entity.TaskModificationRequest;
+import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.repository.TaskRepository;
 import com.MBAREK0.web.repository.implementation.TaskRepositoryImpl;
 import jakarta.persistence.EntityManager;
@@ -44,6 +46,33 @@ public class TaskService {
         return taskRepository.getTasksByManagerId(userId);
     }
 
+    public void requestTaskModification(Task task, User user, User manager) {
+        if (task == null || user == null || manager == null) {
+            throw new IllegalArgumentException("Task, user and manager must be provided");
+        }
 
+        if (task.getUser().getId() != user.getId()) {
+            throw new IllegalArgumentException("Only the user assigned to the task can request a modification");
+        }
+        TaskModificationRequest request = new TaskModificationRequest(task, user, manager);
+        taskRepository.requestTaskModification(request);
+
+    }
+
+    public List<TaskModificationRequest> getAllTaskModificationRequestsByManagerId(Long managerId) {
+        return taskRepository.getAllTaskModificationRequestsByManagerId(managerId);
+    }
+
+    public Optional<TaskModificationRequest> getTaskModificationRequestById(Long id) {
+        return taskRepository.getTaskModificationRequestById(id);
+    }
+
+    public TaskModificationRequest removeTaskModificationRequest(TaskModificationRequest request) {
+        return taskRepository.removeTaskModificationRequest(request);
+    }
+
+    public List<TaskModificationRequest> getPendingRequestsOlderThan12Hours() {
+        return taskRepository.getPendingRequestsOlderThan12Hours();
+    }
 }
 

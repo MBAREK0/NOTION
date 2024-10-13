@@ -45,9 +45,6 @@ public class Inbox {
     @JoinColumn(name = "manager_id", nullable = false)
     private User manager;
 
-    @OneToOne(mappedBy = "inbox")
-    private TaskHistory taskHistory;
-
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

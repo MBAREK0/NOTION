@@ -11,6 +11,9 @@ public interface UserRepository {
      Optional<User> getUserById(Long id);
      Optional<User> getUserByEmail(String email);
      List<User> getAllUsers();
+
+     List<User> getUsersWithEligibleDoubleTokens();
+
      User updateUser(User user);
      User deleteUser(Long id);
      List<User> getUsersByRole(UserOrManager role);

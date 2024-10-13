@@ -6,8 +6,6 @@ import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserOrManager;
 import com.MBAREK0.web.repository.UserRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
@@ -68,6 +66,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public List<User> getUsersWithEligibleDoubleTokens() {
+        return entityManager.createQuery("SELECT u FROM User u WHERE u.eligibleForDoubleTokens > 0", User.class).getResultList();
+    }
+
+    @Override
     public User updateUser(User user) {
         entityManager.getTransaction().begin();
         User user1 = entityManager.merge(user);
@@ -88,4 +91,6 @@ public class UserRepositoryImpl implements UserRepository {
         return user;
 
     }
+
+
 }

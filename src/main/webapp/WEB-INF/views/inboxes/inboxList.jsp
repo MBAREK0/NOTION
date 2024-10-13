@@ -63,7 +63,7 @@
               <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                 <td class="px-8 py-4 font-medium text-gray-900 dark:text-white">${inbox.user.username}</td> <!-- Increased padding -->
                 <td class="px-8 py-4 font-medium text-gray-900 dark:text-white">${inbox.task.title}</td>
-                <td class="px-8 py-4 font-medium text-gray-900 dark:text-white">${inbox.createdAt.format(formatter)}</td>
+                <td class="px-8 py-4 font-medium text-gray-900 dark:text-white">${inbox.requestTime.format(formatter)}</td>
                 <td class="px-8 py-4 flex justify-between items-center">
                   <a href="<%= request.getContextPath() %>/inbox?action=accept&id=${inbox.id}" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">Accept</a>
                 </td>

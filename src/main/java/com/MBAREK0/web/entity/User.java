@@ -23,6 +23,8 @@ import java.util.List;
  );
  */
 
+// ALTER TABLE users ADD COLUMN eligible_for_double_tokens BOOLEAN DEFAULT FALSE;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -69,10 +71,17 @@ public class User {
     @OneToMany(mappedBy = "manager")
     private List<Inbox> managerInbox;
 
-    @Setter
-    @Getter
     @OneToOne(mappedBy = "user")
     private Token token;
+
+    @Column(name = "eligible_for_double_tokens", nullable = false)
+    private int eligibleForDoubleTokens;
+
+    @OneToMany(mappedBy = "user")
+    private List<TaskModificationRequest> taskModificationRequests;
+
+    @OneToMany(mappedBy = "manager")
+    private List<TaskModificationRequest> managedTaskModificationRequests;
 
 
     public User(String username, String password, String firstName, String lastName, String email, UserOrManager role) {

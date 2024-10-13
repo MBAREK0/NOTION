@@ -202,11 +202,8 @@ public class TaskController extends HttpServlet {
             user.setToken(token);
             userService.updateUser(user);
             req.getSession().setAttribute("user", user);
+            taskService.requestTaskModification(task, user, manager);
 
-            TaskHistory taskHistory = new TaskHistory(task,ChangeType.modification);
-            taskHistory.setInbox(inbox);
-            task.addTaskHistory(taskHistory);
-            taskService.updateTask(task);
             ResponseHandler.handleSuccess(req, resp, "tasks", "Request sent successfully");
         }
         else ResponseHandler.handleError(req, resp, "tasks", "Request failed");
