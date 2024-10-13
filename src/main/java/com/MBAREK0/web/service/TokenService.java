@@ -7,6 +7,8 @@ import com.MBAREK0.web.repository.TokenRepository;
 import com.MBAREK0.web.repository.implementation.TokenRepositoryImpl;
 import jakarta.persistence.EntityManager;
 
+import java.util.Optional;
+
 public class TokenService {
 
     private TokenRepository tokenRepository;
@@ -27,6 +29,14 @@ public class TokenService {
             throw new IllegalArgumentException("Only users can have tokens");
         }
 
+    }
+
+    public Optional<Token> getTokenByUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        return tokenRepository.getTokenByUser(user);
     }
 
     public Token deleteToken(Token token) {

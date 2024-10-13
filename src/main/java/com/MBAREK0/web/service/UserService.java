@@ -20,7 +20,7 @@ public class UserService {
 
     public User createUser(User user) {
        String password =  PasswordUtil.hashPassword(user.getPassword());
-         user.setPassword(password);
+        user.setPassword(password);
         return userRepository.createUser(user);
     }
 
@@ -41,8 +41,6 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        String password =  PasswordUtil.hashPassword(user.getPassword());
-        user.setPassword(password);
         return userRepository.updateUser(user);
     }
 

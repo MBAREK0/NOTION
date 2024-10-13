@@ -7,6 +7,8 @@ import com.MBAREK0.web.service.TagService;
 
 import com.MBAREK0.web.service.TaskService;
 import com.MBAREK0.web.service.UserService;
+import com.MBAREK0.web.util.PasswordUtil;
+import com.MBAREK0.web.util.ResponseHandler;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -35,6 +37,27 @@ public class Test extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+
+
+
+
+    }
+
+    private void createManager() {
+
+        User user = new User();
+        user.setEmail("a@a.com");
+        user.setUsername("a");
+        user.setPassword("password");
+        user.setRole(UserOrManager.manager);
+        user.setFirstName("a");
+        user.setLastName("a");
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        UserService userService = new UserService(entityManager);
+        userService.createUser(user);
 
     }
 

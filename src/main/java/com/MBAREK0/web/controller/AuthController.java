@@ -43,6 +43,8 @@ public class AuthController extends HttpServlet {
 
     public void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getSession().invalidate();
+        request.getSession().setAttribute("user", null);
+        request.getSession().setAttribute("role", null);
         response.sendRedirect(request.getContextPath() + "/");
     }
 

@@ -141,7 +141,7 @@ public class InboxController extends HttpServlet {
 
         task = taskService.updateTask(task);
 
-        if (task.getId() != null) {
+        if (task.getUser().getId() == user.getId()) {
 
            if (inboxService.deleteInbox(inboxId) != null) {
                ResponseHandler.handleSuccess(req, resp, "tasks", "Task assigned successfully");

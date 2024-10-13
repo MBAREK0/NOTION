@@ -78,16 +78,11 @@ CREATE TABLE manager_box (
 );
 
 /**
-  -- when add user should add new field in token table
-  -- when someone send request to the manger
-    -- should add new field in task_history table
-    -- should update the token of update t=t-1
-    -- if t=0 then should not allow to update the task
-  -- when manager accept the request should change the status in task_history table
+
   -- track the task history
-    -- create shedouler function run every day to check the task status
+    -- create schedule function run every day to check the task status
         -- if task is overdue then update the status in task table
-    -- create shedouler function run every month to check the delete token
+    -- create schedule function run every month to check the delete token
         -- update the delete token in token table to 1
     -- when delete the task should add the record in task_history table
  */
@@ -130,6 +125,27 @@ SELECT cron.schedule(
 );
 
 ----------------------------------------------------------------------------------
+-- Create a function to mark incomplete tasks as overdue
+CREATE OR REPLACE FUNCTION mark_incomplete_tasks()
+RETURNS void AS $$
+BEGIN
+    UPDATE tasks
+    SET status = 'overdue'
+    WHERE status != 'completed' AND end_date < CURRENT_TIMESTAMP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a job to run the function every day at midnight
+SELECT cron.schedule(
+               'Mark tasks as overdue every 24 hours',  -- Job name
+               '0 0 * * *',                             -- Cron expression: At 00:30 every day
+               $$SELECT mark_incomplete_tasks();$$      -- SQL command to run
+);
+
+
+----------------------------------------------------------------------------------
 -- commands
  -- This command will show all the jobs scheduled in the database
 SELECT * FROM cron.job ORDER BY jobid;
+ -- This command will unschedule the job with jobid 2
+SELECT cron.unschedule(2);

@@ -2,10 +2,7 @@ package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.*;
-import com.MBAREK0.web.service.InboxService;
-import com.MBAREK0.web.service.TagService;
-import com.MBAREK0.web.service.TaskService;
-import com.MBAREK0.web.service.UserService;
+import com.MBAREK0.web.service.*;
 import com.MBAREK0.web.util.DateUtil;
 import com.MBAREK0.web.util.ResponseHandler;
 import com.MBAREK0.web.objCreator.CreateObj;
@@ -28,6 +25,7 @@ public class TaskController extends HttpServlet {
     private TagService tagService;
     private UserService userService;
     private InboxService inboxService;
+    private TokenService tokenService;
 
     public TaskController() {
         entityManager = PersistenceManager.getEntityManager();
@@ -35,6 +33,7 @@ public class TaskController extends HttpServlet {
         tagService = new TagService(entityManager);
         userService = new UserService(entityManager);
         inboxService = new InboxService(entityManager);
+        tokenService = new TokenService(entityManager);
     }
 
 
@@ -78,6 +77,12 @@ public class TaskController extends HttpServlet {
         }
 
         if (user.getRole().equals(UserOrManager.user)) {
+            Optional<Token> opToken = tokenService.getTokenByUser(user);
+            if (opToken.isEmpty()) {
+                ResponseHandler.handleError(req, resp, "tasks", "Token not found!");
+                return;
+            }
+            user.setToken(opToken.get());
             int m_token = user.getToken().getModifyTokenCount();
             int d_token = user.getToken().getDeleteTokenCount();
             req.setAttribute("m_token", m_token);
@@ -211,28 +216,53 @@ public class TaskController extends HttpServlet {
 
     private void deleteTask(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Long id = Long.parseLong(req.getParameter("id"));
+        User user = (User) req.getSession().getAttribute("user");
+        Optional<Task> optionalTask = taskService.getTaskById(id);
+        if (optionalTask.isEmpty()) {
+            ResponseHandler.handleError(req, resp, "tasks", "Task not found!");
+            return;
+        }
+        Task task = optionalTask.get();
+
+        if (user.getRole().equals(UserOrManager.user)){
+            if (task.getManager().getId() == user.getId()) {
+                taskService.deleteTask(id);
+                ResponseHandler.handleSuccess(req, resp, "tasks", "Task is deleted!");
+                return;
+
+            }else if (task.getUser().getId() == user.getId()){
+                Token token = user.getToken();
+                if (token.getDeleteTokenCount() == 0) {
+                    ResponseHandler.handleError(req, resp, "tasks", "You don't have enough delete token");
+                    return;
+                }
+                taskService.deleteTask(id);
+                token.setDeleteTokenCount(token.getDeleteTokenCount() - 1);
+                user.setToken(token);
+                userService.updateUser(user);
+                req.getSession().setAttribute("user", user);
+                ResponseHandler.handleSuccess(req, resp, "tasks", "Task is deleted!");
+                return;
+            }else {
+                ResponseHandler.handleError(req, resp, "tasks", "You are not allowed to delete this task!");
+                return;
+            }
+        }
+
         taskService.deleteTask(id);
-
-        req.setAttribute("message", "Task is deleted!");
-
-        resp.sendRedirect(req.getContextPath() + "/tasks");
+        ResponseHandler.handleSuccess(req, resp, "tasks", "Task is deleted successfully!");
     }
 
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         String action = req.getParameter("action");
 
-        if ("create".equals(action)) {
-            createTask(req, resp);
-        } else if ("edit".equals(action)) {
-            updateTask(req, resp);
-        }else if ("update_status".equals(action)) {
-            updateTaskStatus(req, resp);
-        }
-        else {
-            listTasks(req, resp);
-        }
+        if ("create".equals(action)) createTask(req, resp);
+        else if ("edit".equals(action)) updateTask(req, resp);
+        else if ("update_status".equals(action)) updateTaskStatus(req, resp);
+        else listTasks(req, resp);
 
     }
 

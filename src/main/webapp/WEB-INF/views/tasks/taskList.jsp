@@ -165,7 +165,7 @@
                         <div data-popover id="popover-bottom-${task.id}" role="tooltip" class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 ">
 
                           <div class="w-48 text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            <c:if test="${sessionScope.user.role == 'manager'}">
+                            <c:if test="${sessionScope.user.role == 'manager' || d_token > 0}">
                             <a href="<%= request.getContextPath() %>/tasks?action=delete&id=${task.id}" class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium text-blue-600 rounded-b-lg hover:bg-blue-100 hover:text-blue-800 focus:z-10 focus:ring-2 focus:ring-blue-600 focus:text-blue-700 dark:text-blue-400 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
                                 <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
                                   <path d="M10 11V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
