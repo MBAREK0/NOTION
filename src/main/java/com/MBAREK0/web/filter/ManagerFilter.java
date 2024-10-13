@@ -1,6 +1,6 @@
 package com.MBAREK0.web.filter;
 
-import com.MBAREK0.web.entity.UserOrManager;
+import com.MBAREK0.web.entity.UserRole;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,12 +23,12 @@ public class ManagerFilter implements Filter {
         // Otherwise, continue with the request
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        UserOrManager role = (UserOrManager) httpRequest.getSession().getAttribute("role");
+        UserRole role = (UserRole) httpRequest.getSession().getAttribute("role");
         String requestURI = httpRequest.getRequestURI();
         String actionParam = httpRequest.getParameter("action");
 
 
-        if (role == null || !role.equals(UserOrManager.manager)) {
+        if (role == null || !role.equals(UserRole.manager)) {
             ((HttpServletResponse) response).sendRedirect(httpRequest.getContextPath() + "/");
             return;
         }

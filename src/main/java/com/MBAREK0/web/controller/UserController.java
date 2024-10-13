@@ -2,15 +2,13 @@ package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.User;
-import com.MBAREK0.web.entity.UserOrManager;
+import com.MBAREK0.web.entity.UserRole;
 import com.MBAREK0.web.service.TokenService;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
 import com.MBAREK0.web.objCreator.CreateObj;
 import com.MBAREK0.web.validation.validator.UserValidator;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,7 +55,7 @@ public class UserController extends HttpServlet {
 
     private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
-        if (user.getRole().equals(UserOrManager.user)){
+        if (user.getRole().equals(UserRole.user)){
             ResponseHandler.handleError(request,response,"","You are not allowed to access this page");
         }
         List<User> users = userService.getAllUsers();
@@ -116,7 +114,7 @@ public class UserController extends HttpServlet {
             return;
         }
 
-        if (newUser.getRole().equals(UserOrManager.user)){
+        if (newUser.getRole().equals(UserRole.user)){
             tokenService.saveTokenForUser(newUser);
         }
 

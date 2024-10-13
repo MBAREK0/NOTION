@@ -84,8 +84,6 @@ public class Task {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "task")
-    private List<Inbox> inbox;
 
 
     public Task(String title, String description, TaskStatus status, LocalDate start_date,LocalDate end_date, User user, User manager) {

@@ -1,7 +1,7 @@
 package com.MBAREK0.web.entity;
 
 
-public enum UserOrManager {
+public enum UserRole {
     user,
     manager
 }

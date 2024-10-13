@@ -2,13 +2,11 @@ package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.User;
-import com.MBAREK0.web.entity.UserOrManager;
+import com.MBAREK0.web.entity.UserRole;
 import com.MBAREK0.web.util.PasswordUtil;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,7 +58,7 @@ public class AuthController extends HttpServlet {
 
           if(user != null && PasswordUtil.checkPassword(password, user.getPassword())){
 
-              UserOrManager role = user.getRole();
+              UserRole role = user.getRole();
               request.getSession().setAttribute("user", user);
               request.getSession().setAttribute("role", role);
 

@@ -51,7 +51,7 @@ public class User {
     private String email;
 
     @Enumerated(EnumType.STRING)
-    private UserOrManager role;
+    private UserRole role;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -64,12 +64,6 @@ public class User {
 
     @OneToMany(mappedBy = "manager")
     private List<Task> managedTasks;
-
-    @OneToMany(mappedBy = "user")
-    private List<Inbox> inbox;
-
-    @OneToMany(mappedBy = "manager")
-    private List<Inbox> managerInbox;
 
     @OneToOne(mappedBy = "user")
     private Token token;
@@ -84,7 +78,7 @@ public class User {
     private List<TaskModificationRequest> managedTaskModificationRequests;
 
 
-    public User(String username, String password, String firstName, String lastName, String email, UserOrManager role) {
+    public User(String username, String password, String firstName, String lastName, String email, UserRole role) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
@@ -95,7 +89,7 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public User(String username, String password, String firstName, String lastName, String email, UserOrManager role, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public User(String username, String password, String firstName, String lastName, String email, UserRole role, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
@@ -105,6 +99,7 @@ public class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
 
 
 }

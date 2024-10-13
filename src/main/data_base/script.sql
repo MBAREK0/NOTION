@@ -69,25 +69,6 @@ CREATE TABLE task_modification_requests (
 ALTER TABLE users ADD COLUMN eligible_for_double_tokens INT DEFAULT 0;
 
 
-CREATE TABLE manager_box (
-    id SERIAL PRIMARY KEY,
-    task_id INT NOT NULL,
-    user_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-/**
-
-  -- track the task history
-    -- create schedule function run every day to check the task status
-        -- if task is overdue then update the status in task table
-    -- create schedule function run every month to check the delete token
-        -- update the delete token in token table to 1
-    -- when delete the task should add the record in task_history table
- */
-
 ----------------------------------------------------------------------------------
 -- Create a function to reset the modify_token_count to 2 for all users every day
 

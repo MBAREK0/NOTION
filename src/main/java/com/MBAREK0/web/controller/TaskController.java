@@ -8,8 +8,6 @@ import com.MBAREK0.web.util.ResponseHandler;
 import com.MBAREK0.web.objCreator.CreateObj;
 import com.MBAREK0.web.validation.validator.TaskValidator;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +22,6 @@ public class TaskController extends HttpServlet {
     private TaskService taskService;
     private TagService tagService;
     private UserService userService;
-    private InboxService inboxService;
     private TokenService tokenService;
 
     public TaskController() {
@@ -32,7 +29,6 @@ public class TaskController extends HttpServlet {
         taskService = new TaskService(entityManager);
         tagService = new TagService(entityManager);
         userService = new UserService(entityManager);
-        inboxService = new InboxService(entityManager);
         tokenService = new TokenService(entityManager);
     }
 
@@ -62,7 +58,7 @@ public class TaskController extends HttpServlet {
 
         List<Task> tasks;
 
-        if (user.getRole().equals(UserOrManager.manager)) {
+        if (user.getRole().equals(UserRole.manager)) {
             tasks = taskService.getAllTasksByManagerId(user.getId());
         } else {
             tasks = taskService.getAllTasksByUserId(user.getId());
@@ -76,7 +72,7 @@ public class TaskController extends HttpServlet {
             statusList.remove(TaskStatus.overdue.toString());
         }
 
-        if (user.getRole().equals(UserOrManager.user)) {
+        if (user.getRole().equals(UserRole.user)) {
             Optional<Token> opToken = tokenService.getTokenByUser(user);
             if (opToken.isEmpty()) {
                 ResponseHandler.handleError(req, resp, "tasks", "Token not found!");
@@ -118,7 +114,7 @@ public class TaskController extends HttpServlet {
     private void showCreateForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Tag> tags = tagService.gatAllTags();
         req.setAttribute("tags", tags);
-        List<User> users = userService.getUsersByRole(UserOrManager.user);
+        List<User> users = userService.getUsersByRole(UserRole.user);
         users = users.stream().filter(user -> user.getId() != ((User) req.getSession().getAttribute("user")).getId()).toList();
 
         User user = (User) req.getSession().getAttribute("user");
@@ -149,7 +145,7 @@ public class TaskController extends HttpServlet {
         }
 
         List<Tag> tags = tagService.gatAllTags();
-        List<User> users = userService.getUsersByRole(UserOrManager.user);
+        List<User> users = userService.getUsersByRole(UserRole.user);
         users = users.stream().filter(user -> user.getId() != ((User) req.getSession().getAttribute("user")).getId()).toList();
 
         User user = (User) req.getSession().getAttribute("user");
@@ -186,23 +182,21 @@ public class TaskController extends HttpServlet {
             return;
         }
 
-        Inbox inbox = new Inbox(task, user, manager);
-
 
         if (task.isChanged() == true) {
             ResponseHandler.handleError(req, resp,"tasks", "Task already changed");
             return;
         }
 
-        inbox = inboxService.createInbox(inbox);
 
-        if (inbox.getId() != null) {
+       TaskModificationRequest requestTaskModification =  taskService.requestTaskModification(task, user, manager);
+
+        if (requestTaskModification.getId() != null) {
 
             token.setModifyTokenCount(token.getModifyTokenCount() - 1);
             user.setToken(token);
             userService.updateUser(user);
             req.getSession().setAttribute("user", user);
-            taskService.requestTaskModification(task, user, manager);
 
             ResponseHandler.handleSuccess(req, resp, "tasks", "Request sent successfully");
         }
@@ -221,7 +215,7 @@ public class TaskController extends HttpServlet {
         }
         Task task = optionalTask.get();
 
-        if (user.getRole().equals(UserOrManager.user)){
+        if (user.getRole().equals(UserRole.user)){
             if (task.getManager().getId() == user.getId()) {
                 taskService.deleteTask(id);
                 ResponseHandler.handleSuccess(req, resp, "tasks", "Task is deleted!");

@@ -2,7 +2,6 @@ package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.*;
-import com.MBAREK0.web.service.InboxService;
 import com.MBAREK0.web.service.TaskService;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
@@ -21,18 +20,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
-public class InboxController extends HttpServlet {
+public class RequestController extends HttpServlet {
 
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
-    private InboxService inboxService;
     private TaskService taskService;
     private UserService userService;
 
-    public InboxController() {
+    public RequestController() {
         entityManagerFactory = Persistence.createEntityManagerFactory("default");
         entityManager = PersistenceManager.getEntityManager();
-        inboxService = new InboxService(entityManager);
         taskService = new TaskService(entityManager);
         userService = new UserService(entityManager);
     }
@@ -93,12 +90,12 @@ public class InboxController extends HttpServlet {
             return;
         }
 
-        List<User> users = userService.getUsersByRole(UserOrManager.user);
+        List<User> users = userService.getUsersByRole(UserRole.user);
         users = users.stream().filter(u -> u != user).toList();
 
         req.setAttribute("users", users);
         req.setAttribute("task", task);
-        req.setAttribute("inbox", taskModificationRequest);
+        req.setAttribute("taskModificationRequest", taskModificationRequest);
         req.getRequestDispatcher("/WEB-INF/views/inboxes/changeAssignedUser.jsp").forward(req, resp);
 
     }
@@ -117,16 +114,16 @@ public class InboxController extends HttpServlet {
     private void acceptPostRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         String strTaskId = req.getParameter("task_id");
         String strUserId = req.getParameter("user_id");
-        String strInboxId = req.getParameter("inbox_id");
+        String strTaskModificationRequestId = req.getParameter("request_id");
 
-        if (strTaskId == null || strUserId == null || strInboxId == null || strTaskId.isEmpty() || strUserId.isEmpty() || strInboxId.isEmpty()) {
+        if (strTaskId == null || strUserId == null || strTaskModificationRequestId == null || strTaskId.isEmpty() || strUserId.isEmpty() || strTaskModificationRequestId.isEmpty()) {
             ResponseHandler.handleError(req, resp, "inbox", "Task and User id are required");
             return;
         }
 
         Long taskId = Long.parseLong(strTaskId);
         Long userId = Long.parseLong(strUserId);
-        Long inboxId = Long.parseLong(strInboxId);
+        Long taskModificationRequestId = Long.parseLong(strTaskModificationRequestId);
 
 
         Optional<Task> opTask = taskService.getTaskById(taskId);
@@ -154,8 +151,17 @@ public class InboxController extends HttpServlet {
 
         if (task.getUser().getId() == user.getId()) {
 
-           if (inboxService.deleteInbox(inboxId) != null) {
-               ResponseHandler.handleSuccess(req, resp, "tasks", "Task assigned successfully");
+            Optional<TaskModificationRequest> opTaskModificationRequest = taskService.getTaskModificationRequestById(taskModificationRequestId);
+
+            if (opTaskModificationRequest.isEmpty()) {
+                ResponseHandler.handleError(req, resp, "inbox", "Task modification request not found");
+                return;
+            }
+            TaskModificationRequest taskModificationRequest = opTaskModificationRequest.get();
+
+           if (taskService.removeTaskModificationRequest(taskModificationRequest) != null) {
+                 taskService.removeTaskModificationRequest(taskModificationRequest);
+                 ResponseHandler.handleSuccess(req, resp, "tasks", "Task assigned successfully");
            }
            else ResponseHandler.handleError(req, resp, "inbox", "Task assignment failed");
         }  else ResponseHandler.handleError(req, resp, "inbox", "Task assignment failed");

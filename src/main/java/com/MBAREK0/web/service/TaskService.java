@@ -46,7 +46,7 @@ public class TaskService {
         return taskRepository.getTasksByManagerId(userId);
     }
 
-    public void requestTaskModification(Task task, User user, User manager) {
+    public TaskModificationRequest requestTaskModification(Task task, User user, User manager) {
         if (task == null || user == null || manager == null) {
             throw new IllegalArgumentException("Task, user and manager must be provided");
         }
@@ -55,7 +55,8 @@ public class TaskService {
             throw new IllegalArgumentException("Only the user assigned to the task can request a modification");
         }
         TaskModificationRequest request = new TaskModificationRequest(task, user, manager);
-        taskRepository.requestTaskModification(request);
+        return taskRepository.requestTaskModification(request);
+
 
     }
 

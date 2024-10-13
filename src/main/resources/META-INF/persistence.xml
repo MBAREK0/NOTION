@@ -9,7 +9,7 @@
         <class>com.MBAREK0.web.entity.Tag</class>
         <class>com.MBAREK0.web.entity.Task</class>
         <class>com.MBAREK0.web.entity.TaskModificationRequest</class>
-        <class>com.MBAREK0.web.entity.Inbox</class>
+
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/dev_sync"/>

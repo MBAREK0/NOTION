@@ -20,7 +20,7 @@
             <%--content--%>
             <form class="max-w-2xl mx-auto h-screen " action="<%= request.getContextPath() %>/inbox?action=accept_request" method="post">
                 <input type="hidden" name="task_id" value="${task.id}">
-                <input type="hidden" name="inbox_id" value="${inbox.id}">
+                <input type="hidden" name="request_id" value="${taskModificationRequest.id}">
                 <div class="relative z-0 w-full mb-5 group">
                     <label for="states-single" class="block mb-2 text-sm font-medium text-gray-900">Select New user to assign the task</label>
                     <select class=" selectOne w-full" name="user_id" id="states-single">

@@ -23,7 +23,7 @@ public class CreateObj {
         user.setLastName(request.getParameter("lastName"));
         user.setEmail(request.getParameter("email"));
         if (request.getParameter("role") != null && UserValidator.isValidRole(request.getParameter("role")))
-            user.setRole(UserOrManager.valueOf(request.getParameter("role")));
+            user.setRole(UserRole.valueOf(request.getParameter("role")));
         else{
             ResponseHandler.handleError(request, response,"users", "Invalid user data.");
             return false;
@@ -81,7 +81,7 @@ public class CreateObj {
 
         Task task = new Task(title, description, TaskStatus.pending, LocalDate.parse(startDate), LocalDate.parse(endDate), user , manager);
         task.setTags(new HashSet<>(tagObjList));
-        if(manager.getRole().equals(UserOrManager.user) && user.getRole().equals(UserOrManager.user)){
+        if(manager.getRole().equals(UserRole.user) && user.getRole().equals(UserRole.user)){
             task.setUser(manager);
             task.setManager(manager);
         }
