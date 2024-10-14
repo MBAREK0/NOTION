@@ -24,9 +24,7 @@
       <%--content--%>
 
 
-      <div class="w-full flex justify-end">
-        <a href="<%= request.getContextPath() %>/inboxes?action=create" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create New inbox</a>
-      </div>
+
 
       <div class="width-full flex justify-center ">
         <c:if test="${not empty sessionScope.errorMessage}">
@@ -65,7 +63,12 @@
                 <td class="px-8 py-4 font-medium text-gray-900 dark:text-white">${inbox.task.title}</td>
                 <td class="px-8 py-4 font-medium text-gray-900 dark:text-white">${inbox.requestTime.format(formatter)}</td>
                 <td class="px-8 py-4 flex justify-between items-center">
-                  <a href="<%= request.getContextPath() %>/inbox?action=accept&id=${inbox.id}" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1 text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">Accept</a>
+                  <a href="<%= request.getContextPath() %>/inbox?action=accept&id=${inbox.id}"
+                     class="${inbox.status != 'pending' ? 'text-gray-400 cursor-not-allowed border border-gray-400 bg-gray-200 dark:border-gray-500 dark:text-gray-500 dark:bg-gray-600' : 'text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300'} font-medium rounded-lg text-sm px-5 py-1 text-center"
+                    ${inbox.status != 'pending' ? 'aria-disabled="true" tabindex="-1"' : ''}
+                    ${inbox.status != 'pending' ? 'href="#"' : ''}>
+                    Accept
+                  </a>
                 </td>
               </tr>
             </c:forEach>

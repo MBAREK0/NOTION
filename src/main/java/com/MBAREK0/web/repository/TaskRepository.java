@@ -22,7 +22,7 @@ public interface TaskRepository {
 
     Optional<TaskModificationRequest> getTaskModificationRequestById(Long id);
 
-    TaskModificationRequest removeTaskModificationRequest(TaskModificationRequest request);
-
     List<TaskModificationRequest> getPendingRequestsOlderThan12Hours();
+
+    TaskModificationRequest updateTaskModificationRequest(TaskModificationRequest request);
 }

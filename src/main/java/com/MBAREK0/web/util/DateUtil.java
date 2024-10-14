@@ -8,6 +8,7 @@ import java.util.List;
 public class DateUtil {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+    private static DateTimeFormatter stringFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     public static List<String> getDisabledDates() {
         List<String> dates = new ArrayList<>();
@@ -47,6 +48,10 @@ public class DateUtil {
 
     public static LocalDate parseDate(String date) {
         return LocalDate.parse(date, formatter);
+    }
+
+    public static String parseStringDate(LocalDate date) {
+        return date.format(stringFormatter);
     }
 
 }

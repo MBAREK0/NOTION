@@ -61,6 +61,7 @@ CREATE TABLE task_modification_requests (
     task_id INT NOT NULL,
     user_id INT NOT NULL,
     manager_id INT NOT NULL,
+    status VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'accepted', 'rejected','expired')) DEFAULT 'pending',
     request_time TIMESTAMP,
     manager_response BOOLEAN DEFAULT FALSE,
     response_time TIMESTAMP

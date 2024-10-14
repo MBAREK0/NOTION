@@ -1,8 +1,10 @@
 package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.config.PersistenceManager;
+import com.MBAREK0.web.entity.TaskModificationRequest;
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserRole;
+import com.MBAREK0.web.service.TaskService;
 import com.MBAREK0.web.util.PasswordUtil;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
@@ -13,15 +15,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
 
 public class AuthController extends HttpServlet {
 
     private UserService userService;
     private EntityManager entityManager;
+    private TaskService taskService;
 
     public AuthController() {
         entityManager = PersistenceManager.getEntityManager();
         userService = new UserService(entityManager);
+        taskService = new TaskService(entityManager);
     }
 
     @Override
@@ -61,6 +66,11 @@ public class AuthController extends HttpServlet {
               UserRole role = user.getRole();
               request.getSession().setAttribute("user", user);
               request.getSession().setAttribute("role", role);
+
+              if (user.getRole().equals(UserRole.manager)) {
+                  List<TaskModificationRequest> requests = taskService.getAllTaskModificationRequestsByManagerId(user.getId());
+                  request.getSession().setAttribute("requestsCount", requests.size());
+              }
 
               response.sendRedirect(request.getContextPath() + "/tasks");
 

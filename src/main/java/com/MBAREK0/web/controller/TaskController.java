@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class TaskController extends HttpServlet {
@@ -23,6 +25,7 @@ public class TaskController extends HttpServlet {
     private TagService tagService;
     private UserService userService;
     private TokenService tokenService;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     public TaskController() {
         entityManager = PersistenceManager.getEntityManager();
@@ -67,10 +70,34 @@ public class TaskController extends HttpServlet {
         List<Task> managerTasks = tasks.stream().filter(task -> task.getManager().getId() != task.getUser().getId()).toList();
         List<Task> userTasks = tasks.stream().filter(task -> task.getManager().getId() == task.getUser().getId()).toList();
 
-        List<String> statusList = new ArrayList<>(List.of(TaskStatus.values()).stream().map(TaskStatus::toString).toList());
-        if (statusList.contains(TaskStatus.overdue.toString())) {
-            statusList.remove(TaskStatus.overdue.toString());
+        String[] selectedTags = req.getParameterValues("tags");
+        String startDate = req.getParameter("startDate");
+        String endDate = req.getParameter("endDate");
+
+        List<String> tagsList = null;
+
+        if (selectedTags != null) {
+            tagsList = Arrays.asList(selectedTags);
+            // Convert to ArrayList
+            tagsList = new ArrayList<>(tagsList);
+
+
+            List<Tag> tagObjList = tagService.getTagsByIds(tagsList);
+            managerTasks = managerTasks.stream().filter(task -> task.getTags().containsAll(tagObjList)).toList();
+            userTasks = userTasks.stream().filter(task -> task.getTags().containsAll(tagObjList)).toList();
         }
+
+        // filter tasks by start date and end date
+        if (startDate != null && endDate != null && !startDate.isEmpty() && !endDate.isEmpty()) {
+            LocalDate pStartDate = LocalDate.parse(startDate, formatter);
+            LocalDate pEndDate = LocalDate.parse(endDate, formatter);
+            managerTasks = managerTasks.stream().filter(task -> task.getStartDate().isAfter(pStartDate) && task.getEndDate().isBefore(pEndDate)).toList();
+            userTasks = userTasks.stream().filter(task -> task.getStartDate().isAfter(pStartDate) && task.getEndDate().isBefore(pEndDate)).toList();
+        }
+
+
+        List<String> statusList = new ArrayList<>(List.of(TaskStatus.values()).stream().map(TaskStatus::toString).filter(status -> !status.equals(TaskStatus.overdue.toString())).toList());
+
 
         if (user.getRole().equals(UserRole.user)) {
             Optional<Token> opToken = tokenService.getTokenByUser(user);
@@ -85,6 +112,17 @@ public class TaskController extends HttpServlet {
             req.setAttribute("d_token", d_token);
         }
 
+        String formattedcurrentDate = DateUtil.parseStringDate(LocalDate.now());
+
+        List<Tag> tags = tagService.gatAllTags();
+
+        req.setAttribute("formattedcurrentDate", formattedcurrentDate);
+        req.setAttribute("tags", tags);
+        req.setAttribute("taskCount", tasks.size());
+        req.setAttribute("taskCompletedCount", tasks.stream().filter(task -> task.getStatus().equals(TaskStatus.completed)).count());
+        req.setAttribute("taskIn_progressCount", tasks.stream().filter(task -> task.getStatus().equals(TaskStatus.in_progress)).count());
+        req.setAttribute("taskOverdueCount", tasks.stream().filter(task -> task.getStatus().equals(TaskStatus.overdue)).count());
+        req.setAttribute("taskPendingCount", tasks.stream().filter(task -> task.getStatus().equals(TaskStatus.pending)).count());
         req.setAttribute("statusList", statusList);
         req.setAttribute("managerTasks", managerTasks);
         req.setAttribute("userTasks", userTasks);

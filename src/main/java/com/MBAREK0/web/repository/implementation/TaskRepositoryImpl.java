@@ -1,5 +1,6 @@
 package com.MBAREK0.web.repository.implementation;
 
+import com.MBAREK0.web.entity.RequestStatus;
 import com.MBAREK0.web.entity.Task;
 import com.MBAREK0.web.entity.TaskModificationRequest;
 import com.MBAREK0.web.repository.TaskRepository;
@@ -84,8 +85,9 @@ public class TaskRepositoryImpl implements TaskRepository {
 
     @Override
     public List<TaskModificationRequest> getAllTaskModificationRequestsByManagerId(Long managerId) {
-        return entityManager.createQuery("SELECT r FROM TaskModificationRequest r WHERE r.manager.id = :managerId", TaskModificationRequest.class)
+        return entityManager.createQuery("SELECT r FROM TaskModificationRequest r WHERE r.manager.id = :managerId and r.status = :pendingStatus", TaskModificationRequest.class)
                 .setParameter("managerId", managerId)
+                .setParameter("pendingStatus", RequestStatus.pending)
                 .getResultList();
     }
 
@@ -95,20 +97,21 @@ public class TaskRepositoryImpl implements TaskRepository {
         return Optional.ofNullable(request);
     }
 
-    @Override
-    public TaskModificationRequest removeTaskModificationRequest(TaskModificationRequest request) {
-        entityManager.getTransaction().begin();
-        entityManager.remove(request);
-        entityManager.getTransaction().commit();
-
-        return request;
-    }
 
     @Override
     public List<TaskModificationRequest> getPendingRequestsOlderThan12Hours() {
         LocalDateTime twelveHoursAgo = LocalDateTime.now().minusHours(12);
-        return entityManager.createQuery("SELECT r FROM TaskModificationRequest r WHERE r.managerResponse = false AND  r.requestTime < :twelveHoursAgo", TaskModificationRequest.class)
+        return entityManager.createQuery("SELECT r FROM TaskModificationRequest r WHERE r.managerResponse = false AND r.requestTime < :twelveHoursAgo AND r.status = :pendingStatus", TaskModificationRequest.class)
                 .setParameter("twelveHoursAgo", twelveHoursAgo)
+                .setParameter("pendingStatus", RequestStatus.pending)
                 .getResultList();
+    }
+
+    @Override
+    public TaskModificationRequest updateTaskModificationRequest(TaskModificationRequest request) {
+        entityManager.getTransaction().begin();
+        entityManager.merge(request);
+        entityManager.getTransaction().commit();
+        return request;
     }
 }

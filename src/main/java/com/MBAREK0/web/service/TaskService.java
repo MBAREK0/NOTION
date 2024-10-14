@@ -68,8 +68,10 @@ public class TaskService {
         return taskRepository.getTaskModificationRequestById(id);
     }
 
-    public TaskModificationRequest removeTaskModificationRequest(TaskModificationRequest request) {
-        return taskRepository.removeTaskModificationRequest(request);
+
+
+    public TaskModificationRequest updateTaskModificationRequest(TaskModificationRequest request) {
+        return taskRepository.updateTaskModificationRequest(request);
     }
 
     public List<TaskModificationRequest> getPendingRequestsOlderThan12Hours() {

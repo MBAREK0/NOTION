@@ -43,6 +43,10 @@ public class TaskModificationRequest {
     @JoinColumn(name = "manager_id", nullable = false)
     private User manager;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private RequestStatus status;
+
     @Column(name = "request_time", nullable = false)
     private LocalDateTime requestTime;
 
@@ -58,6 +62,7 @@ public class TaskModificationRequest {
         this.manager = manager;
         this.requestTime = LocalDateTime.now();
         this.managerResponse = false;
+        this.status = RequestStatus.pending;
     }
 
 }

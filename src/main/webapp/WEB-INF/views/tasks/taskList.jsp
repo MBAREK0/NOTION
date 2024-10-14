@@ -8,10 +8,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Page Title</title>
+  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
   <!-- Flowbite CSS -->
   <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css" rel="stylesheet">
   <%--    <link rel="stylesheet" href="<%= request.getContextPath() %>/path/to/your/custom/styles.css" />--%>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/web-component@6.1.15/index.global.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
+
 </head>
 <body>
 
@@ -31,13 +38,27 @@
         </c:if>
 
 
-      <div class="w-full flex justify-end gap-2">
-        <button type="button" data-modal-target="crypto-modal" data-modal-toggle="crypto-modal" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-1 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700">
-          <svg width="20px" height="20px" class="mr-1" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 7H20" stroke="#616161" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M7 12L17 12" stroke="#616161" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M11 17H13" stroke="#616161" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-          filter
-        </button>
-        <a href="<%= request.getContextPath() %>/tasks?action=create" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create New task</a>
-      </div>
+        <div class="w-full flex justify-end gap-2">
+          <!-- Filter Button -->
+        <c:if test="${sessionScope.user.role == 'manager'}">
+          <button type="button" data-modal-target="crypto-modal" data-modal-toggle="crypto-modal" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700">
+            <svg width="20px" height="20px" class="mr-1" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 7H20" stroke="#616161" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M7 12L17 12" stroke="#616161" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M11 17H13" stroke="#616161" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+            Filter
+          </button>
+        </c:if>
+
+          <!-- Create New Task Button -->
+          <a href="<%= request.getContextPath() %>/tasks?action=create" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+            Create New Task
+          </a>
+        </div>
+
+        <c:if test="${sessionScope.user.role == 'manager'}">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <jsp:include page="components/chart.jsp" />
+            <jsp:include page="components/calendrier.jsp" />
+          </div>
+        </c:if>
 
       <div class="width-full flex justify-center ">
         <c:if test="${not empty sessionScope.errorMessage}">
@@ -97,6 +118,9 @@
                       <th scope="col" class="px-6">status</th>
                       <th scope="col" class="px-6">assigned</th>
                       <th scope="col" class="px-6 ">manager</th>
+                      <c:if test="${sessionScope.user.role == 'manager'}">
+                      <th  scope="col" class="px-6 ">token used</th>
+                      </c:if>
                       <th scope="col" class="px-6 ">action</th>
                     </tr>
                   </thead>
@@ -160,6 +184,23 @@
                       <td class="px-6 py-2 font-medium text-gray-900 dark:text-white">
                           ${task.manager.username}
                       </td>
+                      <c:if test="${sessionScope.user.role == 'manager'}">
+                      <td class="px-6 py-2 font-medium text-gray-900 dark:text-white ">
+                        <div class="flex items-center justify-center gap-1">
+                          <p> ${task.taskModificationRequests.size()}</p>
+                          <svg width="14px" height="24px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                              <g fill="none" fill-rule="evenodd">
+                                <circle cx="16" cy="16" fill="#2177e8" r="16"></circle>
+                                <path d="M14.403 19.36L16 21.464V26l-6-2.663V11.619c0-.173.077-.338.212-.453l.683-.585a.636.636 0 01.923.097l5.465 7.164 3.019 1.846v-9.88l-2.668-1.331-.13 6.196-1.412-1.873-.064-6.8L22 8.779v11.664l-1.357 1.118-4.274-2.387-4.744-6.223-.065 9.454 2.825 1.447z" fill="#ffffff" fill-rule="nonzero"></path>
+                              </g>
+                            </g>
+                          </svg>
+                        </div>
+                      </td>
+                      </c:if>
 
                       <td class="px-8 py-4 flex justify-between gap-1 items-center">
                         <div data-popover-target="popover-bottom-${task.id}" data-popover-placement="bottom" class="cursor-pointer">
@@ -356,8 +397,9 @@
 
 
 <%--modal--%>
-<div id="crypto-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-  <div class="relative p-4 w-full max-w-md max-h-full">
+<c:if test="${sessionScope.user.role == 'manager'}">
+  <div id="crypto-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="absolute top-0 p-4 w-full max-w-2xl max-h-full">
     <!-- Modal content -->
     <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
       <!-- Modal header -->
@@ -374,15 +416,61 @@
       </div>
       <!-- Modal body -->
       <div class="p-4 md:p-5">
-        <ul class="my-4 space-y-3">
+        <form action="${pageContext.request.contextPath}/tasks" method="post">
+          <div class="relative col-span-2 z-0 w-full mb-5 group">
+            <label for="tag-multiple" class="block mb-2 text-sm font-medium text-gray-900">Select the task tags</label>
+            <select class="selectTow w-full" style="width: 100% !important; height: 100% !important;" name="tags" id="tag-multiple" multiple>
+              <c:forEach var="tag" items="${tags}">
+                <option value="${tag.id}">${tag.name}</option>
+              </c:forEach>
+            </select>
+          </div>
 
-        </ul>
 
+          <div id="date-range-picker" date-rangepicker class="flex items-center justify-between w-full">
+            <div class="relative">
+              <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                </svg>
+              </div>
+              <input id="datepicker-range-start" name="startDate" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date start">
+            </div>
+            <span class="mx-4 text-gray-500">to</span>
+            <div class="relative">
+              <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                </svg>
+              </div>
+              <input id="datepicker-range-end" name="endDate" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end">
+            </div>
+          </div>
+
+          <div class="flex justify-end mt-2">
+            <button type="submit" class="bg-blue-600 text-white hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              Filter
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
-
+</c:if>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+<script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+<script>
+  $(function () {
+    $('#tag-multiple').select2({
+      placeholder: "Tags",
+      allowClear: true
+    });
+  });
+
+</script>
 </body>
 </html>

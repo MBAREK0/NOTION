@@ -1,6 +1,7 @@
 package com.MBAREK0.web.scheduler;
 
 import com.MBAREK0.web.config.PersistenceManager;
+import com.MBAREK0.web.entity.RequestStatus;
 import com.MBAREK0.web.entity.TaskModificationRequest;
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.service.TaskService;
@@ -37,7 +38,8 @@ public class TaskModificationScheduler {
             User user = request.getUser();
             user.setEligibleForDoubleTokens(user.getEligibleForDoubleTokens() + 1);
             userService.updateUser(user);
-            taskService.removeTaskModificationRequest(request);
+            request.setStatus(RequestStatus.expired);
+            taskService.updateTaskModificationRequest(request);
         }
     }
 }

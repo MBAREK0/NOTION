@@ -53,6 +53,9 @@ public class RequestController extends HttpServlet {
     }
 
     private void listInbox(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        if ( (int) req.getSession().getAttribute("requestsCount") > 0) {
+            req.getSession().setAttribute("requestsCount", 0);
+        }
         User user = (User) req.getSession().getAttribute("user");
         List<TaskModificationRequest> requests = taskService.getAllTaskModificationRequestsByManagerId(user.getId());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm");
@@ -85,7 +88,8 @@ public class RequestController extends HttpServlet {
         long hoursBetween = Duration.between(taskModificationRequest.getRequestTime(), LocalDateTime.now()).toHours();
         if (hoursBetween >= 12) {
 
-            taskService.removeTaskModificationRequest(taskModificationRequest);
+            taskModificationRequest.setStatus(RequestStatus.expired);
+            taskService.updateTaskModificationRequest(taskModificationRequest);
             ResponseHandler.handleError(req, resp, "inbox", "Task modification request expired");
             return;
         }
@@ -159,8 +163,8 @@ public class RequestController extends HttpServlet {
             }
             TaskModificationRequest taskModificationRequest = opTaskModificationRequest.get();
 
-           if (taskService.removeTaskModificationRequest(taskModificationRequest) != null) {
-                 taskService.removeTaskModificationRequest(taskModificationRequest);
+            taskModificationRequest.setStatus(RequestStatus.accepted);
+           if (taskService.updateTaskModificationRequest(taskModificationRequest) != null) {
                  ResponseHandler.handleSuccess(req, resp, "tasks", "Task assigned successfully");
            }
            else ResponseHandler.handleError(req, resp, "inbox", "Task assignment failed");
