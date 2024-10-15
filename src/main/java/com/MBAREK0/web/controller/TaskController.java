@@ -241,8 +241,7 @@ public class TaskController extends HttpServlet {
         else ResponseHandler.handleError(req, resp, "tasks", "Request failed");
 
     }
-
-
+    
     private void deleteTask(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Long id = Long.parseLong(req.getParameter("id"));
         User user = (User) req.getSession().getAttribute("user");
