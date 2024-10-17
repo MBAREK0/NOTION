@@ -4,6 +4,8 @@ import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.TaskModificationRequest;
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserRole;
+import com.MBAREK0.web.repository.UserRepository;
+import com.MBAREK0.web.repository.implementation.UserRepositoryImpl;
 import com.MBAREK0.web.service.TaskService;
 import com.MBAREK0.web.util.PasswordUtil;
 import com.MBAREK0.web.service.UserService;
@@ -25,7 +27,8 @@ public class AuthController extends HttpServlet {
 
     public AuthController() {
         entityManager = PersistenceManager.getEntityManager();
-        userService = new UserService(entityManager);
+        UserRepository userRepository = new UserRepositoryImpl(entityManager);
+        userService = new UserService(userRepository);
         taskService = new TaskService(entityManager);
     }
 
@@ -60,8 +63,12 @@ public class AuthController extends HttpServlet {
           String password = request.getParameter("password");
 
           User user = userService.getUserByEmail(email).orElse(null);
+          String userPassword = user.getPassword();
 
-          if(user != null && PasswordUtil.checkPassword(password, user.getPassword())){
+
+          Boolean chekPassword = PasswordUtil.checkPassword(password, user.getPassword());
+
+          if(user != null && chekPassword){
 
               UserRole role = user.getRole();
               request.getSession().setAttribute("user", user);

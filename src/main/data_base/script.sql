@@ -45,7 +45,7 @@ CREATE TABLE task_tags (
    UNIQUE (task_id, tag_id)  -- Ensure task_id and tag_id combination is unique
 );
 
--- Tokens table to manage user task modification and deletion tokens
+-- Tokens table to manage user task mod ification and deletion tokens
 CREATE TABLE tokens (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,

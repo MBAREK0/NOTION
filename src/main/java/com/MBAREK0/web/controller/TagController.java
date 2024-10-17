@@ -2,6 +2,8 @@ package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.Tag;
+import com.MBAREK0.web.repository.UserRepository;
+import com.MBAREK0.web.repository.implementation.UserRepositoryImpl;
 import com.MBAREK0.web.service.TagService;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
@@ -27,7 +29,9 @@ public class TagController extends HttpServlet {
     public TagController() {
         entityManager = PersistenceManager.getEntityManager();
         tagService = new TagService(entityManager);
-        userService = new UserService(entityManager);
+        UserRepository userRepository = new UserRepositoryImpl(entityManager);
+
+        userService = new UserService(userRepository);
     }
 
     @Override

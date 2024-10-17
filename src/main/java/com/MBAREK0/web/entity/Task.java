@@ -75,7 +75,7 @@ public class Task {
     private boolean isChanged;
 
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(
             name = "task_tags",
             joinColumns = @JoinColumn(name = "task_id"),

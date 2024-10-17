@@ -2,6 +2,8 @@ package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.*;
+import com.MBAREK0.web.repository.UserRepository;
+import com.MBAREK0.web.repository.implementation.UserRepositoryImpl;
 import com.MBAREK0.web.service.TaskService;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
@@ -31,7 +33,9 @@ public class RequestController extends HttpServlet {
         entityManagerFactory = Persistence.createEntityManagerFactory("default");
         entityManager = PersistenceManager.getEntityManager();
         taskService = new TaskService(entityManager);
-        userService = new UserService(entityManager);
+        UserRepository userRepository = new UserRepositoryImpl(entityManager);
+
+        userService = new UserService(userRepository);
     }
 
 
