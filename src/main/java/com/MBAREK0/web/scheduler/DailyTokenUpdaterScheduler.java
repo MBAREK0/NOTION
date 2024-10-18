@@ -2,6 +2,8 @@ package com.MBAREK0.web.scheduler;
 
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.User;
+import com.MBAREK0.web.repository.UserRepository;
+import com.MBAREK0.web.repository.implementation.UserRepositoryImpl;
 import com.MBAREK0.web.service.UserService;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
@@ -21,8 +23,10 @@ public class DailyTokenUpdaterScheduler {
 
     public DailyTokenUpdaterScheduler() {
         EntityManager entityManager = PersistenceManager.getEntityManager();
+        UserRepository userRepository = new UserRepositoryImpl(entityManager);
+
         // Initialize the UserService
-        this.userService = new UserService(entityManager);
+        this.userService = new UserService(userRepository);
     }
 
     @Schedule(hour = "0", minute = "15", persistent = false) // Runs every day at 00:15

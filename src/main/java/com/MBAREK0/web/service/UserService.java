@@ -14,12 +14,11 @@ public class UserService {
 
     private UserRepository userRepository;
 
-    public UserService(EntityManager entityManager) {
-        this.userRepository = new UserRepositoryImpl(entityManager);
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
-
     public User createUser(User user) {
-       String password =  PasswordUtil.hashPassword(user.getPassword());
+        String password =  PasswordUtil.hashPassword(user.getPassword());
         user.setPassword(password);
         return userRepository.createUser(user);
     }
