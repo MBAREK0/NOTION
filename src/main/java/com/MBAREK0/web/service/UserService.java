@@ -18,7 +18,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
     public User createUser(User user) {
-       String password =  PasswordUtil.hashPassword(user.getPassword());
+        String password =  PasswordUtil.hashPassword(user.getPassword());
         user.setPassword(password);
         return userRepository.createUser(user);
     }

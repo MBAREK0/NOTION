@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RequestController extends HttpServlet {
 
@@ -99,7 +100,7 @@ public class RequestController extends HttpServlet {
         }
 
         List<User> users = userService.getUsersByRole(UserRole.user);
-        users = users.stream().filter(u -> u != user).toList();
+        users = users.stream().filter(u -> u != user).collect(Collectors.toList());
 
         req.setAttribute("users", users);
         req.setAttribute("task", task);
