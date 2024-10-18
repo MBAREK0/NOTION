@@ -10,10 +10,9 @@ public interface UserRepository {
      User createUser(User user);
      Optional<User> getUserById(Long id);
      Optional<User> getUserByEmail(String email);
+     Optional<User> getUserByUsername(String username);
      List<User> getAllUsers();
-
      List<User> getUsersWithEligibleDoubleTokens();
-
      User updateUser(User user);
      User deleteUser(Long id);
      List<User> getUsersByRole(UserRole role);

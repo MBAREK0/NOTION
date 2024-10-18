@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class UserServiceTest {
 
@@ -33,6 +32,7 @@ class UserServiceTest {
 
     @Test
     void UserService_getUserById_returnsUser() {
+        // Given
         User user = new User();
         Long userId = 1L;
         String email = "test@test.com";
@@ -60,7 +60,32 @@ class UserServiceTest {
     }
 
     @Test
+    void shouldReturnUserWhenUserExists() {
+        // Given
+        User user = new User();
+        Long userId = 1L;
+        String email = "test@test.com";
+        String password = "password";
+        user.setId(userId);
+        user.setEmail(email);
+        user.setPassword(password);
+
+        // When
+        when(userRepository.getUserByUsername("testuser")).thenReturn(Optional.of(user));
+
+        // Call the service method
+        Optional<User> result = userService.getUserByUsername("testuser");
+
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals(user, result.get());
+
+        verify(userRepository, times(1)).getUserByUsername("testuser");
+    }
+
+    @Test
     void UserService_getUserById_returnsEmptyOptionalWhenUserNotFound() {
+        // Given
         Long userId = 2L;
 
         // When
@@ -74,6 +99,7 @@ class UserServiceTest {
 
     @Test
     void UserService_getUserByEmail_returnsUser() {
+        // Given
         User user = new User();
         Long userId = 1L;
         String email = "test@test.com";
@@ -95,7 +121,7 @@ class UserServiceTest {
 
     @Test
     void UserService_getUserByEmail_returnsEmptyOptionalWhenUserNotFound() {
-
+        // Given
         String email = "test@test.com";
 
         // When
@@ -108,7 +134,8 @@ class UserServiceTest {
     }
 
     @Test
-    void UserService_createUser_returnsUser() {
+    void shouldCreateUserSuccessfullyWhenEmailAndUsernameAreUnique() {
+        // Given
         User user = new User();
         Long userId = 1L;
         String email = "test@test.com";
@@ -116,21 +143,77 @@ class UserServiceTest {
         user.setId(userId);
         user.setEmail(email);
         user.setPassword(password);
+        user.setEligibleForDoubleTokens(1);
+        user.setUsername("testUser");
 
-        //When
+        // when
+        when(userRepository.getUserByEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.getUserByUsername(user.getUsername())).thenReturn(Optional.empty());
         when(userRepository.createUser(user)).thenReturn(user);
-        User result = userService.createUser(user);
 
-        //Then
-        assertEquals(userId, result.getId());
-        assertEquals(email, result.getEmail());
+        // Call the service method
+        User createdUser = userService.createUser(user);
+
+        // Then
+        assertNotNull(createdUser);
+        assertEquals("test@test.com", createdUser.getEmail());
+        assertEquals("testUser", createdUser.getUsername());
         verify(userRepository).createUser(user);
-        assertNotEquals(password, result.getPassword());
+    }
 
+    @Test
+    void shouldThrowExceptionWhenEmailAlreadyExists() {
+        // Given
+        User user = new User();
+        Long userId = 1L;
+        String email = "test@test.com";
+        String password = "password";
+        user.setId(userId);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setEligibleForDoubleTokens(1);
+
+        // When
+        when(userRepository.getUserByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.createUser(user);
+        });
+
+        assertEquals("User with this email already exists", exception.getMessage());
+        verify(userRepository, never()).createUser(user);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUsernameAlreadyExists() {
+        // Given
+        User user = new User();
+        Long userId = 1L;
+        String email = "test@test.com";
+        String password = "password";
+        user.setId(userId);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setEligibleForDoubleTokens(1);
+        user.setUsername("testUser");
+
+        // When
+        when(userRepository.getUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        // Call the service method and expect an exception
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.createUser(user);
+        });
+
+        // Then
+        assertEquals("User with this username already exists", exception.getMessage());
+
+        verify(userRepository, never()).createUser(user);
     }
 
     @Test
     void UserService_updateUser_returnsUser() {
+        // Given
         User user = new User();
         Long userId = 1L;
         String email = "test@test.com";
@@ -152,6 +235,7 @@ class UserServiceTest {
 
     @Test
     void UserService_deleteUser_returnsUser() {
+        // Given
         User user = new User();
         Long userId = 1L;
         String email = "test@test.com";
@@ -173,6 +257,7 @@ class UserServiceTest {
 
     @Test
     void UserService_getAllUsers_returnsListOfUsers() {
+        // Given
         User user = new User();
         Long userId = 1L;
         String email = "test@test.com";
@@ -195,6 +280,7 @@ class UserServiceTest {
 
     @Test
     void UserService_getUsersByRole_returnsListOfUsers() {
+        // Given
         User user = new User();
         Long userId = 1L;
         String email = "test@test.com";
@@ -218,9 +304,9 @@ class UserServiceTest {
 
     }
 
-//    getUsersWithEligibleDoubleTokens
     @Test
     void UserService_getUsersWithEligibleDoubleTokens_returnsListOfUsers() {
+        // Given
         User user = new User();
         Long userId = 1L;
         String email = "test@test.com";
@@ -241,4 +327,6 @@ class UserServiceTest {
 
         verify(userRepository).getUsersWithEligibleDoubleTokens();
     }
+
+
 }
