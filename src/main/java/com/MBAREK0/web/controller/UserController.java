@@ -3,6 +3,8 @@ package com.MBAREK0.web.controller;
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.User;
 import com.MBAREK0.web.entity.UserRole;
+import com.MBAREK0.web.repository.UserRepository;
+import com.MBAREK0.web.repository.implementation.UserRepositoryImpl;
 import com.MBAREK0.web.service.TokenService;
 import com.MBAREK0.web.service.UserService;
 import com.MBAREK0.web.util.ResponseHandler;
@@ -27,7 +29,8 @@ public class UserController extends HttpServlet {
 
     public UserController() {
         entityManager = PersistenceManager.getEntityManager();
-        userService = new UserService(entityManager);
+        UserRepository userRepository = new UserRepositoryImpl(entityManager);
+        userService = new UserService(userRepository);
         tokenService = new TokenService(entityManager);
     }
 
@@ -40,17 +43,12 @@ public class UserController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        if ("list".equals(action)) {
-            listUsers(request, response);
-        } else if ("create".equals(action)) {
-            showCreateForm(request, response);
-        } else if ("edit".equals(action)) {
-            showEditForm(request, response);
-        } else if ("delete".equals(action)) {
-            deleteUser(request, response);
-        } else {
-            listUsers(request, response);
-        }
+        if ("list".equals(action)) listUsers(request, response);
+        else if ("create".equals(action)) showCreateForm(request, response);
+        else if ("edit".equals(action)) showEditForm(request, response);
+        else if ("delete".equals(action)) deleteUser(request, response);
+        else listUsers(request, response);
+
     }
 
     private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

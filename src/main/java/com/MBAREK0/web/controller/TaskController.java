@@ -2,6 +2,8 @@ package com.MBAREK0.web.controller;
 
 import com.MBAREK0.web.config.PersistenceManager;
 import com.MBAREK0.web.entity.*;
+import com.MBAREK0.web.repository.UserRepository;
+import com.MBAREK0.web.repository.implementation.UserRepositoryImpl;
 import com.MBAREK0.web.service.*;
 import com.MBAREK0.web.util.DateUtil;
 import com.MBAREK0.web.util.ResponseHandler;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TaskController extends HttpServlet {
 
@@ -31,7 +34,8 @@ public class TaskController extends HttpServlet {
         entityManager = PersistenceManager.getEntityManager();
         taskService = new TaskService(entityManager);
         tagService = new TagService(entityManager);
-        userService = new UserService(entityManager);
+        UserRepository userRepository = new UserRepositoryImpl(entityManager);
+        userService = new UserService(userRepository);
         tokenService = new TokenService(entityManager);
     }
 
@@ -67,8 +71,8 @@ public class TaskController extends HttpServlet {
             tasks = taskService.getAllTasksByUserId(user.getId());
         }
 
-        List<Task> managerTasks = tasks.stream().filter(task -> task.getManager().getId() != task.getUser().getId()).toList();
-        List<Task> userTasks = tasks.stream().filter(task -> task.getManager().getId() == task.getUser().getId()).toList();
+        List<Task> managerTasks = tasks.stream().filter(task -> task.getManager().getId() != task.getUser().getId()).collect(Collectors.toList());
+        List<Task> userTasks = tasks.stream().filter(task -> task.getManager().getId() == task.getUser().getId()).collect(Collectors.toList());
 
         String[] selectedTags = req.getParameterValues("tags");
         String startDate = req.getParameter("startDate");
@@ -83,20 +87,20 @@ public class TaskController extends HttpServlet {
 
 
             List<Tag> tagObjList = tagService.getTagsByIds(tagsList);
-            managerTasks = managerTasks.stream().filter(task -> task.getTags().containsAll(tagObjList)).toList();
-            userTasks = userTasks.stream().filter(task -> task.getTags().containsAll(tagObjList)).toList();
+            managerTasks = managerTasks.stream().filter(task -> task.getTags().containsAll(tagObjList)).collect(Collectors.toList());
+            userTasks = userTasks.stream().filter(task -> task.getTags().containsAll(tagObjList)).collect(Collectors.toList());
         }
 
         // filter tasks by start date and end date
         if (startDate != null && endDate != null && !startDate.isEmpty() && !endDate.isEmpty()) {
             LocalDate pStartDate = LocalDate.parse(startDate, formatter);
             LocalDate pEndDate = LocalDate.parse(endDate, formatter);
-            managerTasks = managerTasks.stream().filter(task -> task.getStartDate().isAfter(pStartDate) && task.getEndDate().isBefore(pEndDate)).toList();
-            userTasks = userTasks.stream().filter(task -> task.getStartDate().isAfter(pStartDate) && task.getEndDate().isBefore(pEndDate)).toList();
+            managerTasks = managerTasks.stream().filter(task -> task.getStartDate().isAfter(pStartDate) && task.getEndDate().isBefore(pEndDate)).collect(Collectors.toList());
+            userTasks = userTasks.stream().filter(task -> task.getStartDate().isAfter(pStartDate) && task.getEndDate().isBefore(pEndDate)).collect(Collectors.toList());
         }
 
 
-        List<String> statusList = new ArrayList<>(List.of(TaskStatus.values()).stream().map(TaskStatus::toString).filter(status -> !status.equals(TaskStatus.overdue.toString())).toList());
+        List<String> statusList = new ArrayList<>(List.of(TaskStatus.values()).stream().map(TaskStatus::toString).filter(status -> !status.equals(TaskStatus.overdue.toString())).collect(Collectors.toList()));
 
 
         if (user.getRole().equals(UserRole.user)) {
@@ -153,7 +157,7 @@ public class TaskController extends HttpServlet {
         List<Tag> tags = tagService.gatAllTags();
         req.setAttribute("tags", tags);
         List<User> users = userService.getUsersByRole(UserRole.user);
-        users = users.stream().filter(user -> user.getId() != ((User) req.getSession().getAttribute("user")).getId()).toList();
+        users = users.stream().filter(user -> user.getId() != ((User) req.getSession().getAttribute("user")).getId()).collect(Collectors.toList());
 
         User user = (User) req.getSession().getAttribute("user");
         String role  = user.getRole().toString();
@@ -177,14 +181,14 @@ public class TaskController extends HttpServlet {
         Task task = opTask.get();
 
         // get the status of tag for select options
-        List<String> statusList = new ArrayList<>(List.of(TaskStatus.values()).stream().map(TaskStatus::toString).toList());
+        List<String> statusList = new ArrayList<>(List.of(TaskStatus.values()).stream().map(TaskStatus::toString).collect(Collectors.toList()));
         if (statusList.contains(TaskStatus.overdue.toString())) {
             statusList.remove(TaskStatus.overdue.toString());
         }
 
         List<Tag> tags = tagService.gatAllTags();
         List<User> users = userService.getUsersByRole(UserRole.user);
-        users = users.stream().filter(user -> user.getId() != ((User) req.getSession().getAttribute("user")).getId()).toList();
+        users = users.stream().filter(user -> user.getId() != ((User) req.getSession().getAttribute("user")).getId()).collect(Collectors.toList());
 
         User user = (User) req.getSession().getAttribute("user");
         String role  = user.getRole().toString();
