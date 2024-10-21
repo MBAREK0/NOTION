@@ -60,6 +60,21 @@ class UserServiceTest {
     }
 
     @Test
+    void UserService_getUserById_throwsExceptionIfIdIsNull() {
+        // Given
+        Long userId = null;
+
+        // Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.getUserById(userId);
+        });
+
+        // Assert the exception message
+        assertEquals("User ID cannot be null", exception.getMessage());
+    }
+
+
+    @Test
     void shouldReturnUserWhenUserExists() {
         // Given
         User user = new User();
@@ -131,6 +146,69 @@ class UserServiceTest {
         // Then
         assertFalse(result.isPresent());
         verify(userRepository).getUserByEmail(email);
+    }
+
+    @Test
+    void UserService_getUserByUsername_returnsUser() {
+        // Given
+        User user = new User();
+        Long userId = 1L;
+        String username = "testUser";
+        user.setId(userId);
+        user.setUsername(username);
+
+        // When
+        when(userRepository.getUserByUsername(username)).thenReturn(Optional.of(user));
+        Optional<User> result = userService.getUserByUsername(username);
+
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals(username, result.get().getUsername());
+        verify(userRepository).getUserByUsername(username);
+    }
+
+    @Test
+    void UserService_getUserByUsername_throwsExceptionIfUsernameIsNull() {
+        // Given
+        String username = null;
+
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.getUserByUsername(username);
+        });
+    }
+
+    @Test
+    void UserService_getUserByUsername_throwsExceptionIfUsernameIsEmpty() {
+        // Given
+        String username = "";
+
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.getUserByUsername(username);
+        });
+    }
+
+    @Test
+    void UserService_getUserByUsername_throwsExceptionIfUsernameIsTooShort() {
+        // Given
+        String username = "ab"; // less than 3 characters
+
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.getUserByUsername(username);
+        });
+    }
+
+    @Test
+    void UserService_getUserByUsername_throwsExceptionIfUsernameIsTooLong() {
+        // Given
+        String username = "thisusernameistoolongformyliking"; // more than 20 characters
+
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.getUserByUsername(username);
+        });
     }
 
     @Test
